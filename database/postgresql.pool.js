@@ -8,4 +8,12 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 });
 
+// const connectionString = process.env.DATABASE_URL;
+// const pool = new Pool({
+//     connectionString,
+//     ssl: {
+//         rejectUnauthorized: false,
+//     },
+// });
+
 module.exports = pool;
