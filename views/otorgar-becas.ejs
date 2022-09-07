@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="keywords" content="" />
+        <meta name="author" content="" />
+        <meta name="robots" content="" />
+        <meta name="format-detection" content="telephone=no" />
+        <title>Centro Social</title>
+        <!-- Favicon icon -->
+        <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/icon.png" />
+        <!-- Datatable -->
+        <link href="./assets/vendor/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <!-- Custom Stylesheet -->
+        <link href="./assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+        <link href="./assets/css/style.css" rel="stylesheet" />
+
+        <!-- Select 2 -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <!--*******************Preloader - INICIO********************-->
+        <div id="preloader">
+            <div class="sk-three-bounce">
+                <div class="sk-child sk-bounce1"></div>
+                <div class="sk-child sk-bounce2"></div>
+                <div class="sk-child sk-bounce3"></div>
+            </div>
+        </div>
+        <!--*******************Preloader - FIN********************-->
+
+        <!--**********************************Main - INICIO***********************************-->
+        <div id="main-wrapper">
+            <%- include('header'); -%>
+
+            <!--**********************************Contenido Body - INICIO***********************************-->
+            <div class="content-body">
+                <div class="container-fluid">
+                    <!-- row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">OTORGAR BECAS</h4>
+                                    <a href="javascript:void();;" class="btn light btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modalCrearOtorgarBeca">Crear</a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="tabla-otorgar-becas" class="display dataTable_width_auto" style="width: 100%">
+                                            <thead>
+                                                <tr>
+                                                    <th hidden>id_beca</th>
+                                                    <th>BECA</th>
+                                                    <th>CURSO</th>
+                                                    <th>ESTUDIANTE</th>
+                                                    <th>ESTADO BECA</th>
+                                                    <th>DOCUMENTOS</th>
+                                                    <% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
+                                                    <th>Accion</th>
+                                                    <% } %>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <% datosOtorgarBecas.forEach((becaEstudiante) => { %>
+                                                <tr>
+                                                    <td hidden><%= becaEstudiante.id_beca_otorgada %></td>
+                                                    <td><%= becaEstudiante.nombre_beca %></td>
+                                                    <td><%= becaEstudiante.nombre_curso %></td>
+                                                    <td><%= becaEstudiante.nombre_estudiante %></td>
+                                                    <% if(becaEstudiante.estado_beca == 'A'){%>
+                                                    <td>
+                                                        <span class="badge badge-success">APROBADO<span class="ms-1 fa fa-check"></span></span>
+                                                    </td>
+                                                    <% } else if(becaEstudiante.estado_beca == 'R'){%>
+                                                    <td>
+                                                        <span class="badge badge-danger">RECHADAZO<span class="ms-1 fa fa-ban"></span></span>
+                                                    </td>
+                                                    <%} else{%>
+                                                    <td>
+                                                        <span class="badge badge-rounded badge-info">REVISION<span class="ms-1 fa fa-ban"></span></span>
+                                                    </td>
+                                                    <%} %>
+                                                    <td>
+                                                        <ul>
+                                                            <li>Cedula: <% if(becaEstudiante.path_pdf_cedula){%><i class="fa fa-check-circle text-success"></i><%} else{ %> <i class="fa fa-ban text-danger"></i><%}%></li>
+                                                            <li>Votación: <% if(becaEstudiante.path_pdf_papeleta_votacion){%><i class="fa fa-check-circle text-success"></i><%} else{ %> <i class="fa fa-ban text-danger"></i><%}%></li>
+                                                            <li>Solicitud: <% if(becaEstudiante.path_pdf_solicitud_beca){%><i class="fa fa-check-circle text-success"></i><%} else{ %> <i class="fa fa-ban text-danger"></i><%}%></li>
+                                                            <li>Croquis: <% if(becaEstudiante.path_pdf_croquis){%><i class="fa fa-check-circle text-success"></i><%} else{ %> <i class="fa fa-ban text-danger"></i><%}%></li>
+                                                            <li>Planilla: <% if(becaEstudiante.path_pdf_planilla){%><i class="fa fa-check-circle text-success"></i><%} else{ %> <i class="fa fa-ban text-danger"></i><%}%></li>
+                                                        </ul>
+                                                    </td>
+
+                                                    <% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <a onclick="editar(<%= becaEstudiante.id_beca_otorgada%>, <%= becaEstudiante.id_beca%>, <%= becaEstudiante.id_usuario_estudiante%>, '<%= becaEstudiante.nombre_estudiante %>', '<%= becaEstudiante.estado_beca %>')" class="btn btn-primary shadow btn-xs sharp me-1" data-bs-toggle="modal" data-bs-target="#modalModificarOtorgarBeca"
+                                                                ><i class="fas fa-pencil-alt"></i
+                                                            ></a>
+
+                                                            <a onclick="subirArchivo(<%= becaEstudiante.id_beca_otorgada%>)" class="btn btn-secondary btn-xs sharp me-1" data-bs-toggle="modal" data-bs-target="#modalCargarArchivos"><i class="fa fa-paperclip"></i></a>
+
+                                                            <!-- <a onclick="confirmar(<%= becaEstudiante.id_beca_otorgada%>, '<%= becaEstudiante.estado%>')" class="btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a> -->
+                                                            <a onclick="confirmarEliminacion(<%= becaEstudiante.id_beca_otorgada%>)" class="btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a>
+                                                        </div>
+                                                    </td>
+                                                    <% } %>
+                                                </tr>
+                                                <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--********************************** Modal CREAR OTORGAR BECA - INICIO**********************************-->
+            <div class="modal fade" id="modalCrearOtorgarBeca">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Otorgar Becas</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/otorgar-becas" method="POST" class="comment-form">
+                                <input hidden type="text" name="accion" value="insertar" />
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idBeca">Beca<span class="required">*</span></label>
+                                            <select id="selectCrearOtorgarBeca" class="form-select" name="idBeca">
+                                                <option value="0">Seleccione una beca...</option>
+                                                <% datosBecas.forEach((beca) => { %>
+                                                <option value="<%= beca.id_beca%>"><%= beca.nombre%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idEstudiante">Estudiantes<span class="required">*</span></label>
+                                            <select id="selectCrearEstudiante" class="form-select" name="idEstudiante">
+                                                <option value="0">Seleccione un estudiante...</option>
+                                                <% datosEstudiantes.forEach((estudiante) => { %>
+                                                <option id="<%= estudiante.id_usuario%>" value="<%= estudiante.id_usuario%>"><%= estudiante.cedula + ' - ' + estudiante.nombres + ' ' + estudiante.apellidos%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="estadoBeca">Estado de beca<span class="required">*</span></label>
+                                            <select id="selectCrearEstadoBeca" class="form-select" name="estadoBeca">
+                                                <option value="0">Seleccione un estado...</option>
+                                                <option value="REV">Revisión</option>
+                                                <option value="A">Aprobado</option>
+                                                <option value="R">Rechazado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                    <input type="submit" value="Guardar" class="submit btn btn-primary" name="submit" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--********************************** Modal MODIFICAR OTORGAR BECA - INICIO**********************************-->
+            <div class="modal fade" id="modalModificarOtorgarBeca">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Modificar estado de beca</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/otorgar-becas" method="POST" class="comment-form">
+                                <input hidden type="text" name="accion" value="modificar" />
+                                <input id="idBecaOtorgadaModificacion" hidden type="text" name="idBecaOtorgada" />
+                                <input id="idBecaModificacion" hidden type="text" name="idBeca" />
+                                <input id="idEstudianteModificacion" hidden type="text" name="idEstudiante" />
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="nombreEstudiante">Estadudiante</label>
+                                            <input id="nombreEstudianteModificar" type="text" class="form-control" name="nombreEstudiante" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="estadoBeca">Estado de beca<span class="required">*</span></label>
+                                            <select id="selectEstadoBecaModificar" class="form-select" name="estadoBeca">
+                                                <option value="REV">Revisión</option>
+                                                <option value="A">Aprobado</option>
+                                                <option value="R">Rechazado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                    <input type="submit" value="Guardar" class="submit btn btn-primary" name="submit" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--********************************** Modal CARGAR ARCHIVOS BECA - INICIO**********************************-->
+            <div class="modal fade" id="modalCargarArchivos">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cargar PDF</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/cargar-pdf" enctype="multipart/form-data" method="POST" class="comment-form">
+                                <div class="row">
+                                    <input hidden id="idBecaOtorgada" type="text" name="idBecaOtorgada" />
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="tipoDocumento">Tipo Documento<span class="required">*</span></label>
+                                            <select id="selectTipoDocumento" class="form-select" name="tipoDocumento">
+                                                <option value="0">Seleccione un tipo...</option>
+                                                <option value="CEDULA">Cédula de Identidad</option>
+                                                <option value="VOTACION">Papeleta de Votación</option>
+                                                <option value="SOLICITUD">Solicitud de Beca</option>
+                                                <option value="CROQUIS">Croquis</option>
+                                                <option value="PLANILLA">Planilla</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-8">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="myFile">Importar Documento<span class="required">*</span></label>
+                                            <div class="form-file">
+                                                <input type="file" class="form-file-input form-control" name="myFile" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                    <input type="submit" value="Cargar" class="submit btn btn-primary" name="submit" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--**********************************Contenido Body - FIN***********************************-->
+        </div>
+        <!--**********************************Main - FIN***********************************-->
+
+        <!--**********************************Scripts***********************************-->
+        <!-- Required vendors -->
+        <script src="./assets/vendor/global/global.min.js"></script>
+        <script src="./assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+        <script src="./assets/js/custom.min.js"></script>
+        <script src="./assets/js/deznav-init.js"></script>
+
+        <!-- Datatable -->
+        <script src="./assets/vendor/datatables/js/jquery.dataTables.min.js"></script>
+        <script src="./assets/js/plugins-init/datatables.init.js"></script>
+
+        <!-- SweetAlet -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <!-- Select2 -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <%if(esAlerta){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            }).then(()=> {
+                window.location = '/<%= rutaRedireccion %>'
+            });
+        </script>
+        <%}%> <%if(esAlertaSinRecarga){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            })
+        </script>
+        <%}%>
+
+        <script>
+            function confirmar(id, estado) {
+                let mensaje = ``;
+                if (estado == 'S') {
+                    mensaje = 'Seguro que desea inactivar la beca asignada?';
+                } else {
+                    mensaje = 'Seguro que desea activar la beca asignada?';
+                }
+
+                Swal.fire({
+                    title: mensaje,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location = `/inactivar-beca-otorgada?id=${id}&estado=${estado}`;
+                    }
+                });
+            }
+
+            function confirmarEliminacion(id) {
+                Swal.fire({
+                    title: 'Seguro que desea eliminar la beca asignada?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location = `/eliminar-beca-otorgada?id=${id}`;
+                    }
+                });
+            }
+        </script>
+
+        <script>
+            function subirArchivo(id) {
+                document.querySelector('#idBecaOtorgada').setAttribute('value', id);
+            }
+        </script>
+
+        <script>
+            function editar(idBecaOtorgada, idBeca, idEstudiante, nombreEstudiante, estadoBeca) {
+                console.log(idBecaOtorgada, idBeca, idEstudiante, nombreEstudiante, estadoBeca);
+
+                document.querySelector('#idBecaOtorgadaModificacion').setAttribute('value', idBecaOtorgada);
+                document.querySelector('#idBecaModificacion').setAttribute('value', idBeca);
+                document.querySelector('#idEstudianteModificacion').setAttribute('value', idEstudiante);
+                document.querySelector('#nombreEstudianteModificar').setAttribute('value', nombreEstudiante);
+                document.querySelector('#selectEstadoBecaModificar').value = estadoBeca;
+            }
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                $('#selectCrearOtorgarBeca, #selectCrearEstudiante, #selectCrearEstadoBeca, #selectTipoDocumento').select2({
+                    dropdownParent: $('#modalCrearOtorgarBeca .modal-body'),
+                    language: {
+                        noResults: function () {
+                            return 'No hay resultados';
+                        },
+                        searching: function () {
+                            return 'Buscando...';
+                        },
+                    },
+                });
+            });
+
+            $(document).ready(function () {
+                $('#selectTipoDocumento').select2({
+                    dropdownParent: $('#modalCargarArchivos .modal-body'),
+                    language: {
+                        noResults: function () {
+                            return 'No hay resultados';
+                        },
+                        searching: function () {
+                            return 'Buscando...';
+                        },
+                    },
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="keywords" content="" />
+        <meta name="author" content="" />
+        <meta name="robots" content="" />
+        <meta name="format-detection" content="telephone=no" />
+        <title>Centro Social</title>
+        <!-- Favicon icon -->
+        <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/icon.png" />
+        <!-- Datatable -->
+        <link href="./assets/vendor/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <!-- Custom Stylesheet -->
+        <link href="./assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+        <link href="./assets/css/style.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <!--*******************Preloader - INICIO********************-->
+        <div id="preloader">
+            <div class="sk-three-bounce">
+                <div class="sk-child sk-bounce1"></div>
+                <div class="sk-child sk-bounce2"></div>
+                <div class="sk-child sk-bounce3"></div>
+            </div>
+        </div>
+        <!--*******************Preloader - FIN********************-->
+
+        <!--**********************************Main - INICIO***********************************-->
+        <div id="main-wrapper">
+            <%- include('header'); -%>
+
+            <!--**********************************Contenido Body - INICIO***********************************-->
+            <div class="content-body">
+                <div class="container-fluid">
+                    <!-- row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">BECAS</h4>
+                                    <a href="javascript:void();;" class="btn light btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modalCrearBecas">Crear</a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="tabla-becas" class="display dataTable_width_auto" style="width: 100%">
+                                            <thead>
+                                                <tr>
+                                                    <th hidden>id_beca</th>
+                                                    <th>BECA</th>
+                                                    <th>CURSO</th>
+                                                    <th>PORCENTAJE</th>
+                                                    <th>CUPOS</th>
+                                                    <th>DURACIÓN</th>
+                                                    <th>REQUISITOS</th>
+                                                    <th>ESTADO</th>
+                                                    <% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
+                                                    <th>ACCIÓN</th>
+                                                    <% } %>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <% datosBecas.forEach((beca) => { %>
+                                                <tr>
+                                                    <td hidden><%= beca.id_beca %></td>
+                                                    <td><%= beca.nombre %></td>
+                                                    <td><%= beca.nombre_curso %></td>
+                                                    <td><%= beca.porcentaje %></td>
+                                                    <td><%= beca.cupos %></td>
+                                                    <td>
+                                                        <b>Inicio:</b> <%= beca.fecha_inicio %> <br />
+                                                        <b>Fin:</b> <%= beca.fecha_fin %>
+                                                    </td>
+                                                    <td><%= beca.requisitos %></td>
+                                                    <% if(beca.estado == 'S'){%>
+                                                    <td>
+                                                        <span class="badge badge-success">Activo<span class="ms-1 fa fa-check"></span></span>
+                                                    </td>
+                                                    <% } else{%>
+                                                    <td>
+                                                        <span class="badge badge-danger">Inactivo<span class="ms-1 fa fa-ban"></span></span>
+                                                    </td>
+                                                    <%}%><% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <a
+                                                                onclick="editar(<%= beca.id_beca%>, '<%= beca.nombre %>', '<%= beca.descripcion %>', <%= beca.porcentaje %>, <%= beca.cupos %>, '<%= beca.fecha_inicio %>', '<%= beca.fecha_fin %>', '<%= beca.requisitos %>', <%= beca.id_curso %>)"
+                                                                class="btn btn-primary shadow btn-xs sharp me-1"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modalModificarBecas"
+                                                                ><i class="fas fa-pencil-alt"></i
+                                                            ></a>
+                                                            <a onclick="confirmar(<%= beca.id_beca%>, '<%= beca.estado%>')" class="btn shadow btn-xs sharp"><i class="fas fa-ellipsis-v"></i></a>
+                                                        </div>
+                                                    </td>
+                                                    <% } %>
+                                                </tr>
+                                                <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--********************************** Modal CREAR BECAS - INICIO**********************************-->
+            <div class="modal fade" id="modalCrearBecas">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Crear Becas</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/becas" method="POST" class="comment-form">
+                            <div class="modal-body">
+                                <input hidden type="text" name="accion" value="insertar" />
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="nombreBeca">Nombre<span class="required">*</span></label>
+                                            <input type="text" class="form-control" name="nombreBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="descripcionBeca">Descripcion<span class="required">*</span></label>
+                                            <input type="text" class="form-control" name="descripcionBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="cuposBeca">Cupos<span class="required">*</span></label>
+                                            <input type="number" class="form-control" name="cuposBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="porcentajeBeca">Porcentaje<span class="required">*</span></label>
+                                            <input type="number" class="form-control" name="porcentajeBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaInicioBeca">Fecha Inicio<span class="required">*</span></label>
+                                            <input type="date" class="form-control" name="fechaInicioBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaFinBeca">Fecha Fin<span class="required">*</span></label>
+                                            <input type="date" class="form-control" name="fechaFinBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="requisitosBeca">Requisitos<span class="required">*</span></label>
+                                            <textarea cols="30" rows="5" class="form-control bg-transparent" name="requisitosBeca" placeholder="Ingrese los requisitos de la beca..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idCurso">Curso<span class="required">*</span></label>
+                                            <select class="form-select" name="idCurso">
+                                                <option value="0">Seleccione un curso...</option>
+                                                <% datosCursos.forEach((curso) => { %>
+                                                <option id="<%= curso.id_curso%>" value="<%= curso.id_curso%>"><%= curso.nombre%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                <input type="submit" value="Guardar" class="submit btn btn-primary" name="submit" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!--********************************** Modal MODIFICAR CAPACITACION - INICIO**********************************-->
+            <div class="modal fade" id="modalModificarBecas">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Modificació Becas</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/becas" method="POST" class="comment-form">
+                            <div class="modal-body">
+                                <input hidden type="text" name="accion" value="modificar" />
+                                <input id="idBeca" hidden type="text" name="idBeca" />
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="nombreBeca">Nombre<span class="required">*</span></label>
+                                            <input id="nombre" type="text" class="form-control" name="nombreBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="descripcionBeca">Descripcion<span class="required">*</span></label>
+                                            <input id="descripcion" type="text" class="form-control" name="descripcionBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="cuposBeca">Cupos<span class="required">*</span></label>
+                                            <input id="cupos" type="number" class="form-control" name="cuposBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="porcentajeBeca">Porcentaje<span class="required">*</span></label>
+                                            <input id="porcentaje" type="number" class="form-control" name="porcentajeBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaInicioBeca">Fecha Inicio<span class="required">*</span></label>
+                                            <input id="fechaInicio" type="date" class="form-control" name="fechaInicioBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaFinBeca">Fecha Fin<span class="required">*</span></label>
+                                            <input id="fechaFin" type="date" class="form-control" name="fechaFinBeca" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="requisitosBeca">Requisitos<span class="required">*</span></label>
+                                            <textarea id="requisitos" cols="30" rows="5" class="form-control bg-transparent" name="requisitosBeca" placeholder="Ingrese los requisitos de la beca..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idCurso">Curso<span class="required">*</span></label>
+                                            <select id="selectCurso" class="form-select" name="idCurso">
+                                                <option value="0">Seleccione un curso...</option>
+                                                <% datosCursos.forEach((curso) => { %>
+                                                <option id="<%= curso.id_curso%>" value="<%= curso.id_curso%>"><%= curso.nombre%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                <input type="submit" value="Guardar" class="submit btn btn-primary" name="submit" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!--**********************************Contenido Body - FIN***********************************-->
+        </div>
+        <!--**********************************Main - FIN***********************************-->
+
+        <!--**********************************Scripts***********************************-->
+        <!-- Required vendors -->
+        <script src="./assets/vendor/global/global.min.js"></script>
+        <script src="./assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+        <script src="./assets/js/custom.min.js"></script>
+        <script src="./assets/js/deznav-init.js"></script>
+
+        <!-- Datatable -->
+        <script src="./assets/vendor/datatables/js/jquery.dataTables.min.js"></script>
+        <script src="./assets/js/plugins-init/datatables.init.js"></script>
+
+        <!-- SweetAlet -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <%if(esAlerta){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            }).then(()=> {
+                window.location = '/<%= rutaRedireccion %>'
+            });
+        </script>
+        <%}%> <%if(esAlertaSinRecarga){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            })
+        </script>
+        <%}%>
+
+        <script>
+            function confirmar(id, estado) {
+                let mensaje = ``;
+                if (estado == 'S') {
+                    mensaje = 'Seguro que desea inactivar la beca?';
+                } else {
+                    mensaje = 'Seguro que desea activar la beca?';
+                }
+
+                Swal.fire({
+                    title: mensaje,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location = `/inactivar-beca?id=${id}&estado=${estado}`;
+                    }
+                });
+            }
+        </script>
+
+        <script>
+            function editar(id, nombre, descripcion, porcentaje, cupos, fechaInicio, fechaFin, requisitos, idCurso) {
+                //console.log(id, nombre, descripcion, porcentaje, cupos, fechaInicio, fechaFin, requisitos, idCurso);
+
+                document.querySelector('#idBeca').setAttribute('value', id);
+                document.querySelector('#nombre').setAttribute('value', nombre);
+                document.querySelector('#descripcion').setAttribute('value', descripcion);
+                document.querySelector('#cupos').setAttribute('value', cupos);
+                document.querySelector('#porcentaje').setAttribute('value', porcentaje);
+                document.querySelector('#fechaInicio').setAttribute('value', fechaInicio);
+                document.querySelector('#fechaFin').setAttribute('value', fechaFin);
+                document.querySelector('#requisitos').innerHTML = requisitos;
+                document.querySelector('#selectCurso').value = idCurso;
+            }
+        </script>
+    </body>
+</html>

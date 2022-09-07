@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="keywords" content="" />
+        <meta name="author" content="" />
+        <meta name="robots" content="" />
+        <meta name="format-detection" content="telephone=no" />
+        <title>Centro Social</title>
+        <!-- Favicon icon -->
+        <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/icon.png" />
+
+        <!-- Custom Stylesheet -->
+        <link href="./assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+        <link href="./assets/css/style.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <!--*******************Preloader - INICIO********************-->
+        <div id="preloader">
+            <div class="sk-three-bounce">
+                <div class="sk-child sk-bounce1"></div>
+                <div class="sk-child sk-bounce2"></div>
+                <div class="sk-child sk-bounce3"></div>
+            </div>
+        </div>
+        <!--*******************Preloader - FIN********************-->
+
+        <!--**********************************Main - INICIO***********************************-->
+        <div id="main-wrapper">
+            <%- include('header'); -%>
+
+            <!--**********************************Contenido Body - INICIO***********************************-->
+            <div class="content-body">
+                <div class="container-fluid">
+                    <div class="row page-titles mx-0">
+                        <div class="col-sm-6">
+                            <div class="welcome-text">
+                                <h4 class="card-title">BECAS</h4>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                            <a href="javascript:void();;" class="btn light btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modalCrearBecas">Crear</a>
+                        </div>
+                    </div>
+                    <!-- row -->
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title">Pie Chart</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="grafico_1"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--**********************************Contenido Body - FIN***********************************-->
+        </div>
+        <!--**********************************Main - FIN***********************************-->
+
+        <!--**********************************Scripts***********************************-->
+        <!-- Required vendors -->
+        <script src="./assets/vendor/global/global.min.js"></script>
+        <script src="./assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+        <script src="./assets/js/custom.min.js"></script>
+        <script src="./assets/js/deznav-init.js"></script>
+
+        <!-- Chart ChartJS plugin files -->
+        <script src="./assets/vendor/chart.js/Chart.bundle.min.js"></script>
+        <script src="./assets/js/plugins-init/chartjs-init.js"></script>
+
+        <!-- SweetAlet -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <%if(esAlerta){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            }).then(()=> {
+                window.location = '/<%= rutaRedireccion %>'
+            });
+        </script>
+        <%}%> <%if(esAlertaSinRecarga){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            })
+        </script>
+        <%}%>
+
+        <script>
+            let contextoPie = document.querySelector('#grafico_1');
+            let nombres = ['Jonathan', 'Cindy', 'Michal', 'Jordi', 'Dora'];
+            let edades = [24, 10, 53, 18, 30];
+
+            const myChart = new Chart(contextoPie, {
+                type: 'pie',
+                data: {
+                    labels: nombres,
+                    datasets: [
+                        {
+                            label: 'Edad',
+                            data: edades,
+                            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                            borderColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                            borderWidth: 1.5,
+                        },
+                    ],
+                },
+            });
+        </script>
+    </body>
+</html>

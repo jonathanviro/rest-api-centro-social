@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="keywords" content="" />
+        <meta name="author" content="" />
+        <meta name="robots" content="" />
+        <meta name="format-detection" content="telephone=no" />
+        <title>Centro Social</title>
+        <!-- Favicon icon -->
+        <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/icon.png" />
+        <!-- Datatable -->
+        <link href="./assets/vendor/datatables/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <!-- Custom Stylesheet -->
+        <link href="./assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+        <link href="./assets/css/style.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <!--*******************Preloader - INICIO********************-->
+        <div id="preloader">
+            <div class="sk-three-bounce">
+                <div class="sk-child sk-bounce1"></div>
+                <div class="sk-child sk-bounce2"></div>
+                <div class="sk-child sk-bounce3"></div>
+            </div>
+        </div>
+        <!--*******************Preloader - FIN********************-->
+
+        <!--**********************************Main - INICIO***********************************-->
+        <div id="main-wrapper">
+            <%- include('header'); -%>
+
+            <!--**********************************Contenido Body - INICIO***********************************-->
+            <div class="content-body">
+                <div class="container-fluid">
+                    <!-- row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">CAPACITACIONES</h4>
+                                    <a href="javascript:void();;" class="btn light btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modalCrearCapacitacion">Crear</a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="tabla-capacitaciones" class="display dataTable_width_auto" style="width: 100%">
+                                            <thead>
+                                                <tr>
+                                                    <th hidden>id_capacitacion</th>
+                                                    <th>Capacitación</th>
+                                                    <th>Curso</th>
+                                                    <th>Horario</th>
+                                                    <th>Docente</th>
+                                                    <th>Cupos</th>
+                                                    <th>Horas</th>
+                                                    <th>Periodo</th>
+                                                    <th>Estado</th>
+                                                    <% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
+                                                    <th>Accion</th>
+                                                    <% } %>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <% datosCapacitaciones.forEach((capacitacion) => { %>
+                                                <tr>
+                                                    <td hidden><%= capacitacion.id_capacitacion %></td>
+                                                    <td><%= capacitacion.nombre %></td>
+                                                    <td><%= capacitacion.nombre_curso %></td>
+                                                    <td><%= capacitacion.desc_horario %></td>
+                                                    <td><%= capacitacion.nombre_docente %></td>
+                                                    <td><%= capacitacion.cupos %></td>
+                                                    <td><%= capacitacion.duracion_horas %></td>
+                                                    <td>
+                                                        <b>Inicio:</b> <%= capacitacion.fecha_inicio %> <br />
+                                                        <b>Fin:</b> <%= capacitacion.fecha_fin %>
+                                                    </td>
+                                                    <% if(capacitacion.estado == 'S'){%>
+                                                    <td>
+                                                        <span class="badge badge-success">Activo<span class="ms-1 fa fa-check"></span></span>
+                                                    </td>
+                                                    <% } else{%>
+                                                    <td>
+                                                        <span class="badge badge-danger">Inactivo<span class="ms-1 fa fa-ban"></span></span>
+                                                    </td>
+                                                    <%}%><% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <a
+                                                                onclick="editar(<%= capacitacion.id_capacitacion%>, '<%= capacitacion.nombre %>', '<%= capacitacion.descripcion %>', '<%= capacitacion.cupos %>', '<%= capacitacion.duracion_horas %>', '<%= capacitacion.fecha_inicio %>', '<%= capacitacion.fecha_fin %>', <%= capacitacion.id_curso %>, <%= capacitacion.id_horario %>, <%= capacitacion.id_usuario_docente %>)"
+                                                                class="btn btn-primary shadow btn-xs sharp me-1"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modalModificarCapacitacion"
+                                                                ><i class="fas fa-pencil-alt"></i
+                                                            ></a>
+                                                            <a onclick="confirmar(<%= capacitacion.id_capacitacion%>, '<%= capacitacion.estado%>')" class="btn shadow btn-xs sharp"><i class="fas fa-ellipsis-v"></i></a>
+                                                        </div>
+                                                    </td>
+                                                    <% } %>
+                                                </tr>
+                                                <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--********************************** Modal CREAR CAPACITACION - INICIO**********************************-->
+            <div class="modal fade" id="modalCrearCapacitacion">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Crear Capacitación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/capacitaciones" method="POST" class="comment-form">
+                            <div class="modal-body">
+                                <input hidden type="text" name="accion" value="insertar" />
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="nombreCapacitacion">Nombre<span class="required">*</span></label>
+                                            <input type="text" class="form-control" name="nombreCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="descripcionCapacitacion">Descripcion<span class="required">*</span></label>
+                                            <input type="text" class="form-control" name="descripcionCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="cuposCapacitacion">Cupos<span class="required">*</span></label>
+                                            <input type="number" class="form-control" name="cuposCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="horasCapacitacion">Horas<span class="required">*</span></label>
+                                            <input type="number" class="form-control" name="horasCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaInicioCapacitacion">Fecha Inicio<span class="required">*</span></label>
+                                            <input type="date" class="form-control" name="fechaInicioCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaFinCapacitacion">Fecha Fin<span class="required">*</span></label>
+                                            <input type="date" class="form-control" name="fechaFinCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idCurso">Curso<span class="required">*</span></label>
+                                            <select class="form-select" name="idCurso">
+                                                <option value="0">Seleccione un curso...</option>
+                                                <% datosCursos.forEach((curso) => { %>
+                                                <option id="<%= curso.id_curso%>" value="<%= curso.id_curso%>"><%= curso.nombre%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idHorario">Horario<span class="required">*</span></label>
+                                            <select class="form-select" name="idHorario">
+                                                <option value="0">Seleccione un horario...</option>
+                                                <% datosHorarios.forEach((horario) => { %>
+                                                <option id="<%= horario.id_horario%>" value="<%= horario.id_horario%>"><%= horario.descripcion%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idDocente">Docentes<span class="required">*</span></label>
+                                            <select class="form-select" name="idDocente">
+                                                <option value="0">Seleccione un docente...</option>
+                                                <% datosDocentes.forEach((docente) => { %>
+                                                <option id="<%= docente.id_usuario%>" value="<%= docente.id_usuario%>"><%= docente.nombres + ' ' + docente.apellidos%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                <input type="submit" value="Guardar" class="submit btn btn-primary" name="submit" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!--********************************** Modal MODIFICAR CAPACITACION - INICIO**********************************-->
+            <div class="modal fade" id="modalModificarCapacitacion">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Modificar Capacitación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/capacitaciones" method="POST" class="comment-form">
+                            <div class="modal-body">
+                                <input hidden type="text" name="accion" value="modificar" />
+                                <input id="idCapacitacion" hidden type="text" name="idCapacitacion" />
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="nombreCapacitacion">Nombre<span class="required">*</span></label>
+                                            <input id="nombreCapacitacion" type="text" class="form-control" name="nombreCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="descripcionCapacitacion">Descripcion<span class="required">*</span></label>
+                                            <input id="descripcionCapacitacion" type="text" class="form-control" name="descripcionCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="cuposCapacitacion">Cupos<span class="required">*</span></label>
+                                            <input id="cuposCapacitacion" type="number" class="form-control" name="cuposCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="horasCapacitacion">Horas<span class="required">*</span></label>
+                                            <input id="horasCapacitacion" type="number" class="form-control" name="horasCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaInicioCapacitacion">Fecha Inicio<span class="required">*</span></label>
+                                            <input id="fechaInicioCapacitacion" type="date" class="form-control" name="fechaInicioCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="fechaFinCapacitacion">Fecha Fin<span class="required">*</span></label>
+                                            <input id="fechaFinCapacitacion" type="date" class="form-control" name="fechaFinCapacitacion" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idCurso">Curso<span class="required">*</span></label>
+                                            <select id="selectCurso" class="form-select" name="idCurso">
+                                                <option value="0">Seleccione un curso...</option>
+                                                <% datosCursos.forEach((curso) => { %>
+                                                <option id="<%= curso.id_curso%>" value="<%= curso.id_curso%>"><%= curso.nombre%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idHorario">Horario<span class="required">*</span></label>
+                                            <select id="selectHorario" class="form-select" name="idHorario">
+                                                <option value="0">Seleccione un horario...</option>
+                                                <% datosHorarios.forEach((horario) => { %>
+                                                <option id="<%= horario.id_horario%>" value="<%= horario.id_horario%>"><%= horario.descripcion%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label" for="idDocente">Docentes<span class="required">*</span></label>
+                                            <select id="selectDocente" class="form-select" name="idDocente">
+                                                <option value="0">Seleccione un docente...</option>
+                                                <% datosDocentes.forEach((docente) => { %>
+                                                <option id="<%= docente.id_usuario%>" value="<%= docente.id_usuario%>"><%= docente.nombres + ' ' + docente.apellidos%></option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                <input type="submit" value="Actualizar" class="submit btn btn-primary" name="submit" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!--**********************************Contenido Body - FIN***********************************-->
+        </div>
+        <!--**********************************Main - FIN***********************************-->
+
+        <!--**********************************Scripts***********************************-->
+        <!-- Required vendors -->
+        <script src="./assets/vendor/global/global.min.js"></script>
+        <script src="./assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+        <script src="./assets/js/custom.min.js"></script>
+        <script src="./assets/js/deznav-init.js"></script>
+
+        <!-- Datatable -->
+        <script src="./assets/vendor/datatables/js/jquery.dataTables.min.js"></script>
+        <script src="./assets/js/plugins-init/datatables.init.js"></script>
+
+        <!-- SweetAlet -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <%if(esAlerta){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            }).then(()=> {
+                window.location = '/<%= rutaRedireccion %>'
+            });
+        </script>
+        <%}%> <%if(esAlertaSinRecarga){%>
+        <script>
+            Swal.fire({
+                title: '<%= alertaTitulo %>',
+                text: '<%= alertaMensaje %>',
+                icon: '<%= alertaIcono %>',
+                showConfirmButton: <%= mostrarBotonConfirmacion %>,
+                timer: <%= timer %>
+            })
+        </script>
+        <%}%>
+
+        <script>
+            function confirmar(id, estado) {
+                let mensaje = ``;
+                if (estado == 'S') {
+                    mensaje = 'Seguro que desea inactivar la capacitacion?';
+                } else {
+                    mensaje = 'Seguro que desea activar la capacitacion?';
+                }
+
+                Swal.fire({
+                    title: mensaje,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location = `/inactivar-capacitacion?id=${id}&estado=${estado}`;
+                    }
+                });
+            }
+        </script>
+
+        <script>
+            function editar(id, nombre, descripcion, cupos, horas, fechaInicio, fechaFin, idCurso, idHorario, idDocente) {
+                // console.log(id, nombre, descripcion, cupos, horas, fechaInicio, fechaFin, idCurso, idHorario, idDocente);
+
+                document.querySelector('#idCapacitacion').setAttribute('value', id);
+                document.querySelector('#nombreCapacitacion').setAttribute('value', nombre);
+                document.querySelector('#descripcionCapacitacion').setAttribute('value', descripcion);
+                document.querySelector('#cuposCapacitacion').setAttribute('value', cupos);
+                document.querySelector('#horasCapacitacion').setAttribute('value', horas);
+                document.querySelector('#fechaInicioCapacitacion').setAttribute('value', fechaInicio);
+                document.querySelector('#fechaFinCapacitacion').setAttribute('value', fechaFin);
+                document.querySelector('#selectCurso').value = idCurso;
+                document.querySelector('#selectHorario').value = idHorario;
+                document.querySelector('#selectDocente').value = idDocente;
+            }
+        </script>
+    </body>
+</html>
