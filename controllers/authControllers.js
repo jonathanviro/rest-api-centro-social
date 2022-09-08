@@ -104,6 +104,8 @@ const login = async (req, res) => {
                             //inicio de session OK
                             const idUsuarioDB = results.rows[0]['id_usuario'];
                             const idRolUsuario = results.rows[0]['id_rol'];
+
+                            console.log(results.rows);
                             if (idRolUsuario == 5) {
                                 res.render('login', {
                                     esAlerta: true,
