@@ -22,6 +22,7 @@ const consultarEstudiantesBecados = async (req, res, next) => {
 
 const consultarPruebas = async (req, res) => {
     try {
+        console.log('Hola servicio');
         const sql = `select be.*, cu.nombre as nombre_curso from cursos cu,  becas be where be.id_curso = cu.id_curso`;
         db.query(sql, async (error, results) => {
             if (!error) {
