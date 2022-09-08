@@ -12,7 +12,7 @@ const { consultarCapacitaciones, accionesCapacitaciones, inactivacionCapacitacio
 const { consultarBecas, accionesBecas, inactivacionBeca } = require('../controllers/becasControllers');
 const { consultarMatriculas, accionesMatriculas, inactivacionMatricula } = require('../controllers/matriculasControllers');
 const { consultarBecasOtorgadas, accionesOtorgarBecas, inactivarBeca, eliminarBeca } = require('../controllers/otorgarBecasControllers');
-const { consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas } = require('../controllers/graficosControllers');
+const { consultarPruebas, consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas } = require('../controllers/graficosControllers');
 const cargarPdfController = require('../controllers/cargarPdfControllers');
 
 //Definimos las rutas para las vistas
@@ -29,7 +29,8 @@ router.get('/capacitaciones', estaAutenticado, consultarCursos, consultarHorario
 router.get('/becas', estaAutenticado, consultarCursos, consultarBecas, vistaBecas);
 router.get('/matriculas', estaAutenticado, consultarCapacitaciones, consultarEstudiantes, consultarMatriculas, vistaMatriculas);
 router.get('/otorgar-becas', estaAutenticado, consultarBecas, consultarEstudiantes, consultarBecasOtorgadas, vistaOtorgarBecas);
-router.get('/graficos', estaAutenticado, consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas, vistaGraficos);
+router.get('/graficos', consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas, vistaGraficos);
+router.get('/prueba', consultarPruebas);
 
 //Definimos las rutas para los metodos de los controller de autenticacion
 router.post('/registro-usuarios', createUser);
@@ -40,7 +41,7 @@ router.get('/logout', logout);
 router.get('/inactivar-rol/', estaAutenticado, consultarRoles, inactivacionRol);
 
 //Definimos las rutas para los metodos de los controller de usuarios
-router.post('/usuarios', consultarUsuarios, accionesUsuarios);
+router.post('/usuarios', estaAutenticado, consultarUsuarios, accionesUsuarios);
 router.get('/inactivar-usuario/', estaAutenticado, consultarUsuarios, inactivacionUsuario);
 
 //Definimos las rutas para los metodos de los controller de cursos
