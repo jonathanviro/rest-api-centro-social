@@ -40,7 +40,7 @@ router.get('/logout', logout);
 router.get('/inactivar-rol/', estaAutenticado, consultarRoles, inactivacionRol);
 
 //Definimos las rutas para los metodos de los controller de usuarios
-router.post('/usuarios', estaAutenticado, consultarUsuarios, accionesUsuarios);
+router.post('/usuarios', consultarUsuarios, accionesUsuarios);
 router.get('/inactivar-usuario/', estaAutenticado, consultarUsuarios, inactivacionUsuario);
 
 //Definimos las rutas para los metodos de los controller de cursos
