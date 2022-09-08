@@ -72,7 +72,7 @@ const createUser = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { cedula, contrasena } = req.body;
-        // console.log(`cedula: ${cedula} - contrasena: ${contrasena}`);
+        console.log(`cedula: ${cedula} - contrasena: ${contrasena}`);
 
         if (!cedula || !contrasena) {
             res.render('login', {
