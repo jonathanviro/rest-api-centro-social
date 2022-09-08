@@ -38,7 +38,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/prueba-general', (req, res) => {
+app.get('/prueba-general-j', (req, res) => {
     res.send('Hola mi server en express');
 });
 
