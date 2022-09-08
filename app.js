@@ -38,10 +38,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/prueba-general-j', (req, res) => {
-    res.send('Hola mi server en express');
-});
-
 app.listen(process.env.PORT || 3000, () => {
     console.log('Servidor corriendo en http://localhost:' + process.env.PORT || 3000);
 });
