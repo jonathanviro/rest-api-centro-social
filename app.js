@@ -22,9 +22,6 @@ dotenv.config({ path: './env/.env' });
 //para poder trabajar con cookies
 app.use(cookieParser());
 
-//cors
-app.use(cors(options));
-
 //Llamar el router
 const router = require('./routes/router');
 app.use(router.routes);
