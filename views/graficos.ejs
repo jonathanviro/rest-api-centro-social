@@ -35,34 +35,124 @@
             <!--**********************************Contenido Body - INICIO***********************************-->
             <div class="content-body">
                 <div class="container-fluid">
-                    <div class="row page-titles mx-0">
-                        <div class="col-sm-6">
-                            <div class="welcome-text">
-                                <h4 class="card-title">BECAS</h4>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 justify-content-sm-end mt-2 mt-sm-0 d-flex">
-                            <a href="javascript:void();;" class="btn light btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modalCrearBecas">Crear</a>
-                        </div>
-                    </div>
                     <!-- row -->
 
                     <div class="row">
                         <div class="col-12">
-                            <div class="row">
+                            <div class="row" id="miDiv">
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h4 class="card-title">Pie Chart</h4>
+                                            <h4 class="card-title">Estudiantes Becados</h4>
+                                            <button id="downloadPdf" type="button" class="btn btn-rounded btn-outline-dark" onclick="descargarPdf()">
+                                                <i class="fa fa-download color-warning"></i>
+                                            </button>
                                         </div>
                                         <div class="card-body">
-                                            <canvas id="grafico_1"></canvas>
+                                            <canvas id="grafico-becados"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title">Estudiantes Financiados</h4>
+                                            <button type="button" class="btn btn-rounded btn-outline-dark">
+                                                <i class="fa fa-download color-warning"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="grafico-financiamiento"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title">Estudiantes Inscritos</h4>
+                                            <button type="button" class="btn btn-rounded btn-outline-dark">
+                                                <i class="fa fa-download color-warning"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="grafico-inscripciones"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title">Capacitación demandada</h4>
+                                            <button type="button" class="btn btn-rounded btn-outline-dark">
+                                                <i class="fa fa-download color-warning"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="grafico-capacitaciones"></canvas>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div id="miTabla" hidden>
+                        <table id="tabla-otorgar-becas" class="display dataTable_width_auto" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>BECA</th>
+                                    <th>CURSO</th>
+                                    <th>ESTUDIANTE</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <% datosEstudiantesBecados.forEach((becaEstudiante) => { %>
+                                <tr>
+                                    <td><%= becaEstudiante.nombre_beca %></td>
+                                    <td><%= becaEstudiante.nombre_curso %></td>
+                                    <td><%= becaEstudiante.nombre_estudiante %></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- <div id="content">
+        <h2 class="text-center">Export from HTML</h2>
+        </p>
+        <br>
+        <table id="demo" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Serial Number</th>
+              <th>Name</th>
+              <th>Percentile</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>James</td>
+              <td>8.9</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Harry</td>
+              <td>7.6</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Emma</td>
+              <td>7.0</td>
+            </tr>
+          </tbody>
+        </table>
+        <div>
+          <button class="btn" id="export">Save</button>
+        </div>
+
+        <br>
+
+      </div> -->
                 </div>
             </div>
 
@@ -78,8 +168,10 @@
         <script src="./assets/js/deznav-init.js"></script>
 
         <!-- Chart ChartJS plugin files -->
-        <script src="./assets/vendor/chart.js/Chart.bundle.min.js"></script>
-        <script src="./assets/js/plugins-init/chartjs-init.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+
+        <!-- script datos graficos -->
+        <script src="./assets/js/personalizados/datos-pie-chart.js"></script>
 
         <!-- SweetAlet -->
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -108,26 +200,131 @@
         </script>
         <%}%>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
         <script>
-            let contextoPie = document.querySelector('#grafico_1');
-            let nombres = ['Jonathan', 'Cindy', 'Michal', 'Jordi', 'Dora'];
-            let edades = [24, 10, 53, 18, 30];
-
-            const myChart = new Chart(contextoPie, {
-                type: 'pie',
-                data: {
-                    labels: nombres,
-                    datasets: [
-                        {
-                            label: 'Edad',
-                            data: edades,
-                            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-                            borderColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-                            borderWidth: 1.5,
-                        },
-                    ],
-                },
-            });
+            const descargarPdf = () => {};
         </script>
+        <!-- <script>
+            let table = document.createElement('table');
+            let thead = document.createElement('thead');
+            let tbody = document.createElement('tbody');
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+
+            // Adding the entire table to the body tag
+            document.getElementById('miTabla').appendChild(table);
+
+            let row_1 = document.createElement('tr');
+            let heading_1 = document.createElement('th');
+            heading_1.innerHTML = 'Sr. No.';
+            let heading_2 = document.createElement('th');
+            heading_2.innerHTML = 'Name';
+            let heading_3 = document.createElement('th');
+            heading_3.innerHTML = 'Company';
+
+            row_1.appendChild(heading_1);
+            row_1.appendChild(heading_2);
+            row_1.appendChild(heading_3);
+            thead.appendChild(row_1);
+
+            // Creating and adding data to third row of the table
+            let row_3 = document.createElement('tr');
+            let row_3_data_1 = document.createElement('td');
+            row_3_data_1.innerHTML = '2.';
+            let row_3_data_2 = document.createElement('td');
+            row_3_data_2.innerHTML = 'Adam White';
+            let row_3_data_3 = document.createElement('td');
+            row_3_data_3.innerHTML = 'Microsoft';
+
+            row_3.appendChild(row_3_data_1);
+            row_3.appendChild(row_3_data_2);
+            row_3.appendChild(row_3_data_3);
+            tbody.appendChild(row_3);
+        </script> -->
+
+        <!-- <script>
+            $('#downloadPdf').click(function (event) {
+                // get size of report page
+                var reportPageHeight = $('#miDiv').innerHeight();
+                var reportPageWidth = $('#miDiv').innerWidth();
+
+                // create a new canvas object that we will populate with all other canvas objects
+                var pdfCanvas = $('<canvas />').attr({
+                    id: 'canvaspdf',
+                    width: reportPageWidth,
+                    height: reportPageHeight,
+                });
+
+                // keep track canvas position
+                var pdfctx = $(pdfCanvas)[0].getContext('2d');
+                var pdfctxX = 0;
+                var pdfctxY = 0;
+                var buffer = 100;
+
+                // for each chart.js chart
+                $('canvas').each(function (index) {
+                    // get the chart height/width
+                    var canvasHeight = $(this).innerHeight();
+                    var canvasWidth = $(this).innerWidth();
+
+                    // draw the chart into the new canvas
+                    pdfctx.drawImage($(this)[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+                    pdfctxX += canvasWidth + buffer;
+
+                    // our report page is in a grid pattern so replicate that in the new canvas
+                    if (index % 2 === 1) {
+                        pdfctxX = 0;
+                        pdfctxY += canvasHeight + buffer;
+                    }
+                });
+
+                // create new pdf and add our new canvas as an image
+                var pdf = new jsPDF('l', 'pt', [reportPageWidth, reportPageHeight]);
+                pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+
+                // download the pdf
+                pdf.save('filename.pdf');
+            });
+        </script> -->
+
+        <!-- <script>
+
+            document.getElementById('export').addEventListener('click',
+            exportPDF);
+
+            var specialElementHandlers = {
+            '.no-export': function(element, renderer) {
+                return true;
+            }
+            };
+
+            function exportPDF() {
+
+            var doc = new jsPDF('p', 'pt', 'a4');
+
+
+            var source = document.getElementById('content').innerHTML;
+
+            var margins = {
+                top: 10,
+                bottom: 10,
+                left: 10,
+                width: 595
+            };
+
+            doc.fromHTML(
+                source, 
+                margins.left,
+                margins.top, {
+                'width': margins.width,
+                'elementHandlers': specialElementHandlers
+                },
+
+                function(dispose) {
+                doc.save('Test.pdf');
+                }, margins);
+            }
+            </script>-->
     </body>
 </html>

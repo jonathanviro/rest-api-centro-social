@@ -75,7 +75,7 @@ const vistaOtorgarBecas = (req, res) => {
     res.render('otorgar-becas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosBecas: req.datosBecas, datosEstudiantes: req.datosEstudiantes, datosOtorgarBecas: req.datosOtorgarBecas });
 };
 const vistaGraficos = (req, res) => {
-    res.render('graficos', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false });
+    res.render('graficos', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosEstudiantesBecados: req.datosEstudiantesBecados });
 };
 
 module.exports = {

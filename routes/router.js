@@ -12,11 +12,13 @@ const { consultarCapacitaciones, accionesCapacitaciones, inactivacionCapacitacio
 const { consultarBecas, accionesBecas, inactivacionBeca } = require('../controllers/becasControllers');
 const { consultarMatriculas, accionesMatriculas, inactivacionMatricula } = require('../controllers/matriculasControllers');
 const { consultarBecasOtorgadas, accionesOtorgarBecas, inactivarBeca, eliminarBeca } = require('../controllers/otorgarBecasControllers');
-const { consultarPruebas, consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas } = require('../controllers/graficosControllers');
+const { consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas } = require('../controllers/graficosControllers');
+const { reporteEstudiantesBecados } = require('../controllers/reportesControllers');
 const cargarPdfController = require('../controllers/cargarPdfControllers');
 
 //Definimos las rutas para las vistas
-router.get('/', estaAutenticado, vistaIndex);
+
+router.get('/', estaAutenticado, vistaGraficos);
 router.get('/login', vistaLogin);
 router.get('/registro-usuarios', vistaRegistroUsuarios);
 router.get('/usuarios', estaAutenticado, consultarUsuarios, vistaUsuarios);
@@ -29,8 +31,12 @@ router.get('/capacitaciones', estaAutenticado, consultarCursos, consultarHorario
 router.get('/becas', estaAutenticado, consultarCursos, consultarBecas, vistaBecas);
 router.get('/matriculas', estaAutenticado, consultarCapacitaciones, consultarEstudiantes, consultarMatriculas, vistaMatriculas);
 router.get('/otorgar-becas', estaAutenticado, consultarBecas, consultarEstudiantes, consultarBecasOtorgadas, vistaOtorgarBecas);
-router.get('/graficos', consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas, vistaGraficos);
-router.get('/prueba', consultarPruebas);
+router.get('/graficos', estaAutenticado, reporteEstudiantesBecados, vistaGraficos);
+router.get('/estudiantes-becados', consultarEstudiantesBecados);
+router.get('/estudiantes-inscriptos', consultarEstudiantesInscritos);
+router.get('/capacitaciones-demandadas', consultarCapacitacionesDemandadas);
+router.get('/estudiantes-porcentajes-becas', consultarEstudiantesFinanciamiento);
+// router.get('/reporte-estudiantes-becados', reporteEstudiantesBecados);
 
 //Definimos las rutas para los metodos de los controller de autenticacion
 router.post('/registro-usuarios', createUser);

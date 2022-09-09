@@ -86,7 +86,7 @@ const login = async (req, res) => {
             });
         } else {
             if (validarCedula(cedula)) {
-                const sql = `SELECT * FROM USUARIOS WHERE cedula = $1`;
+                const sql = `SELECT * FROM public.USUARIOS WHERE cedula = $1`;
 
                 db.query(sql, [cedula], async (error, results) => {
                     if (!error) {
@@ -162,7 +162,7 @@ const estaAutenticado = async (req, res, next) => {
             const cookieDecodificada = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRETO);
             // console.log(`cookieDECODIFICADA=========>`);
             console.log(cookieDecodificada);
-            const sql = `SELECT * FROM USUARIOS WHERE id_usuario = $1`;
+            const sql = `SELECT * FROM public.USUARIOS WHERE id_usuario = $1`;
             db.query(sql, [cookieDecodificada.idUsuarioDB], async (error, results) => {
                 if (!error) {
                     if (results.rowCount == 0) {
