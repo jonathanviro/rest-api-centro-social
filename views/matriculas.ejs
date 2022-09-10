@@ -127,7 +127,7 @@
                                             <label class="text-black font-w600 form-label" for="idEstudiante">Estudiantes<span class="required">*</span></label>
                                             <select id="selectCrearEstudiante" class="form-select" name="idEstudiante">
                                                 <option value="0">Seleccione un estudiante...</option>
-                                                <% datosEstudiantes.forEach((estudiante) => { %>
+                                                <% datosUsuarios.forEach((estudiante) => { %>
                                                 <option id="<%= estudiante.id_usuario%>" value="<%= estudiante.id_usuario%>"><%= estudiante.cedula + ' - ' + estudiante.nombres + ' ' + estudiante.apellidos%></option>
                                                 <% }) %>
                                             </select>
@@ -172,7 +172,7 @@
                                             <label class="text-black font-w600 form-label" for="idEstudiante">Estudiantes<span class="required">*</span></label>
                                             <select id="selectModificarEstudiante" class="form-select" name="idEstudiante">
                                                 <option value="0">Seleccione un estudiante...</option>
-                                                <% datosEstudiantes.forEach((estudiante) => { %>
+                                                <% datosUsuarios.forEach((estudiante) => { %>
                                                 <option value="<%= estudiante.id_usuario%>"><%= estudiante.cedula + ' - ' + estudiante.nombres + ' ' + estudiante.apellidos%></option>
                                                 <% }) %>
                                             </select>

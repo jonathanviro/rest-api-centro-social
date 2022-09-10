@@ -68,11 +68,11 @@ const vistaBecas = (req, res) => {
 };
 
 const vistaMatriculas = (req, res) => {
-    res.render('matriculas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosCapacitaciones: req.datosCapacitaciones, datosEstudiantes: req.datosEstudiantes, datosMatriculas: req.datosMatriculas });
+    res.render('matriculas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosCapacitaciones: req.datosCapacitaciones, datosUsuarios: req.datosUsuarios, datosMatriculas: req.datosMatriculas });
 };
 
 const vistaOtorgarBecas = (req, res) => {
-    res.render('otorgar-becas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosBecas: req.datosBecas, datosEstudiantes: req.datosEstudiantes, datosOtorgarBecas: req.datosOtorgarBecas });
+    res.render('otorgar-becas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosBecas: req.datosBecas, datosUsuarios: req.datosUsuarios, datosOtorgarBecas: req.datosOtorgarBecas });
 };
 const vistaGraficos = (req, res) => {
     res.render('graficos', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosEstudiantesBecados: req.datosEstudiantesBecados });

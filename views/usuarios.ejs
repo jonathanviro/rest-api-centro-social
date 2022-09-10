@@ -42,26 +42,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title">USUARIOS</h4>
-                                    <% if(usuarioLogin.id_rol != 4 ){ %>
-                                    <form action="/usuarios" method="GET">
-                                        <input hidden type="text" name="accion" value="todos" />
-                                        <button type="submit" class="btn btn-rounded btn-outline-light">Todos</button>
-                                    </form>
-                                    <% } %> <% if(usuarioLogin.id_rol == 1 || usuarioLogin.id_rol == 2 ){ %>
-                                    <form action="/usuarios" method="GET">
-                                        <input hidden type="text" name="accion" value="personal" />
-                                        <button type="submit" class="btn btn-rounded btn-outline-light">Administración</button>
-                                    </form>
-                                    <% } %> <% if(usuarioLogin.id_rol != 4 ){ %>
-                                    <form action="/usuarios" method="GET">
-                                        <input hidden type="text" name="accion" value="docentes" />
-                                        <button type="submit" class="btn btn-rounded btn-outline-light">Docentes</button>
-                                    </form>
-                                    <form action="/usuarios" method="GET">
-                                        <input hidden type="text" name="accion" value="estudiantes" />
-                                        <button type="submit" class="btn btn-rounded btn-outline-light">Estudiantes</button>
-                                    </form>
-                                    <% }%> <% if(usuarioLogin.id_rol == 1 || usuarioLogin.id_rol == 2 || usuarioLogin.id_rol == 3){ %>
+                                    <% if(usuarioLogin.id_rol == 1 || usuarioLogin.id_rol == 2 || usuarioLogin.id_rol == 3){ %>
                                     <a href="javascript:void();;" class="btn light btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">Crear</a>
                                     <% } %>
                                 </div>
@@ -110,7 +91,7 @@
                                                     <td><%= usuario.profesion%></td>
                                                     <% if(usuario.id_rol == '3'){%>
                                                     <td>
-                                                        <span class="badge badge-rounded badge-outline-dark">Administración</span>
+                                                        <span class="badge badge-rounded badge-outline-dark">Secretaria/o</span>
                                                     </td>
                                                     <% } if(usuario.id_rol == '4'){%>
                                                     <td>
@@ -230,7 +211,7 @@
                                                 <option value="4">Docente</option>
                                                 <option value="5" selected>Estudiante</option>
                                                 <% if(usuarioLogin.id_rol == 1 || usuarioLogin.id_rol == 2){ %>
-                                                <option value="3">Administración</option>
+                                                <option value="3">Secretaria/o</option>
                                                 <% } %>
                                             </select>
                                         </div>

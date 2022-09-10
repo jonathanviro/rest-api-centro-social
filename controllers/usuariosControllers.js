@@ -52,6 +52,27 @@ const consultarUsuarios = async (req, res, next) => {
     }
 };
 
+const consultarSecretaria = async (req, res, next) => {
+    try {
+        let sql = `SELECT * FROM USUARIOS WHERE id_rol=3 ORDER BY id_usuario DESC`;
+
+        db.query(sql, async (error, results) => {
+            if (!error) {
+                if (results.rowCount == 0) {
+                    req.datosUsuarios = [];
+                    return next();
+                } else {
+                    req.datosUsuarios = results.rows;
+                    return next();
+                }
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        return next();
+    }
+};
+
 const consultarDocentes = async (req, res, next) => {
     try {
         let sql = `SELECT * FROM USUARIOS WHERE id_rol=4 ORDER BY id_usuario DESC`;
@@ -59,10 +80,10 @@ const consultarDocentes = async (req, res, next) => {
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
-                    req.datosDocentes = [];
+                    req.datosUsuarios = [];
                     return next();
                 } else {
-                    req.datosDocentes = results.rows;
+                    req.datosUsuarios = results.rows;
                     return next();
                 }
             }
@@ -80,10 +101,10 @@ const consultarEstudiantes = async (req, res, next) => {
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
-                    req.datosEstudiantes = [];
+                    req.datosUsuarios = [];
                     return next();
                 } else {
-                    req.datosEstudiantes = results.rows;
+                    req.datosUsuarios = results.rows;
                     return next();
                 }
             }
@@ -271,6 +292,7 @@ const inactivacionUsuario = async (req, res) => {
 
 module.exports = {
     consultarUsuarios,
+    consultarSecretaria,
     consultarDocentes,
     consultarEstudiantes,
     accionesUsuarios,
