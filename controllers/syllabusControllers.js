@@ -4,8 +4,7 @@ const consultarSyllabus = async (req, res, next) => {
     try {
         const sql = `SELECT S.*, C.nombre as nombre_curso 
                        FROM SYLLABUS S, CURSOS C  
-                      WHERE S.estado='S' 
-                        and S.id_curso = C.id_curso 
+                      WHERE S.id_curso = C.id_curso 
                       ORDER BY S.id_syllabu DESC;`;
 
         db.query(sql, async (error, results) => {
@@ -128,10 +127,17 @@ const accionesSyllabus = async (req, res) => {
 };
 
 const inactivacionSyllabu = async (req, res) => {
-    const sql = `UPDATE SYLLABUS set estado='N' WHERE id_syllabu=$1`;
-    const idSyllabu = req.params.id;
-    console.log(`INACTIVACION++++>>>${idSyllabu}`);
-    db.query(sql, [idSyllabu])
+    let sql = ``;
+
+    const { id, estado } = req.query;
+    console.log(`INACTIVACION++++>>>${id} , ${estado}`);
+    if (estado == 'S') {
+        sql = `UPDATE SYLLABUS set estado='N' WHERE id_syllabu=$1`;
+    } else {
+        sql = `UPDATE SYLLABUS set estado='S' WHERE id_syllabu=$1`;
+    }
+
+    db.query(sql, [id])
         .then((results) => {
             res.redirect('/syllabus');
         })
@@ -151,8 +157,33 @@ const inactivacionSyllabu = async (req, res) => {
         });
 };
 
+const eliminarSyllabu = async (req, res) => {
+    let sql = `DELETE FROM SYLLABUS WHERE id_syllabu=$1;`;
+    const { id } = req.query;
+    console.log(`ELIMINAR++++>>>${id} `);
+
+    db.query(sql, [id])
+        .then((results) => {
+            res.redirect('/syllabus');
+        })
+        .catch((error) => {
+            res.render('syllabus', {
+                esAlerta: false,
+                esAlertaSinRecarga: true,
+                alertaTitulo: 'Error inesperado',
+                alertaMensaje: `Mensaje: ${error.message}`,
+                alertaIcono: 'error',
+                mostrarBotonConfirmacion: true,
+                timer: false,
+                usuarioLogin: req.usuarioLogin,
+                datosSyllabus: req.datosSyllabus,
+            });
+        });
+};
+
 module.exports = {
     consultarSyllabus,
     accionesSyllabus,
     inactivacionSyllabu,
+    eliminarSyllabu,
 };

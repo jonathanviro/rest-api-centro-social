@@ -148,7 +148,7 @@
                                             <label class="text-black font-w600 form-label" for="idEstudiante">Estudiantes<span class="required">*</span></label>
                                             <select id="selectCrearEstudiante" class="form-select" name="idEstudiante">
                                                 <option value="0">Seleccione un estudiante...</option>
-                                                <% datosUsuarios.forEach((estudiante) => { %>
+                                                <% datosEstudiantes.forEach((estudiante) => { %>
                                                 <option id="<%= estudiante.id_usuario%>" value="<%= estudiante.id_usuario%>"><%= estudiante.cedula + ' - ' + estudiante.nombres + ' ' + estudiante.apellidos%></option>
                                                 <% }) %>
                                             </select>
@@ -160,7 +160,7 @@
                                             <select id="selectCrearEstadoBeca" class="form-select" name="estadoBeca">
                                                 <option value="0">Seleccione un estado...</option>
                                                 <option value="REV">Revisión</option>
-                                                <option value="A">Aprobado</option>
+                                                <!-- <option value="A">Aprobado</option> -->
                                                 <option value="R">Rechazado</option>
                                             </select>
                                         </div>
@@ -362,7 +362,11 @@
                 document.querySelector('#idBecaModificacion').setAttribute('value', idBeca);
                 document.querySelector('#idEstudianteModificacion').setAttribute('value', idEstudiante);
                 document.querySelector('#nombreEstudianteModificar').setAttribute('value', nombreEstudiante);
-                document.querySelector('#selectEstadoBecaModificar').value = estadoBeca;
+                if (estadoBeca == '') {
+                    document.querySelector('#selectEstadoBecaModificar').value = 'REV';
+                } else {
+                    document.querySelector('#selectEstadoBecaModificar').value = estadoBeca;
+                }
             }
         </script>
 

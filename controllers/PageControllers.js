@@ -2,32 +2,6 @@ const db = require('../database/postgresql.pool');
 const { consultarCursos } = require('../controllers/cursosControllers');
 
 const vistaIndex = async (req, res) => {
-    //const query = `SELECT * FROM "USUARIOS"`;
-    // const responseBD = await pool.query(query, async (error, results) => {
-    //     if (!error && error.code === '42P01') {
-    //         console.log(`${error}`);
-    //     } else {
-    //         console.log(results.rows);
-    //     }
-    // });
-
-    // pool.query(query)
-    //     .then((res) => {
-    //         if (res.rowCount > 0) {
-    //             console.log(res.rows[0]['CONTRASENA']);
-    //         } else {
-    //             console.log('No hay datos');
-    //         }
-    //     })
-    //     .catch((err) => {
-    //         if (err.code === '42P01') {
-    //             console.log(`La tabla no existe --- ${err}`);
-    //         }
-    //     });
-
-    // console.log('==========================================================================================================================================');
-    // console.log(req);
-    // console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
     res.render('index', { usuarioLogin: req.usuarioLogin });
 };
 
@@ -41,6 +15,18 @@ const vistaRegistroUsuarios = (req, res) => {
 
 const vistaUsuarios = (req, res) => {
     res.render('usuarios', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosUsuarios: req.datosUsuarios });
+};
+
+const vistaSecretarias = (req, res) => {
+    res.render('secretarias', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosSecretarias: req.datosSecretarias });
+};
+
+const vistaDocentes = (req, res) => {
+    res.render('docentes', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosDocentes: req.datosDocentes });
+};
+
+const vistaEstudiantes = (req, res) => {
+    res.render('estudiantes', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosEstudiantes: req.datosEstudiantes });
 };
 
 const vistaRoles = (req, res) => {
@@ -68,11 +54,11 @@ const vistaBecas = (req, res) => {
 };
 
 const vistaMatriculas = (req, res) => {
-    res.render('matriculas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosCapacitaciones: req.datosCapacitaciones, datosUsuarios: req.datosUsuarios, datosMatriculas: req.datosMatriculas });
+    res.render('matriculas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosCapacitaciones: req.datosCapacitaciones, datosHorarios: req.datosHorarios, datosEstudiantes: req.datosEstudiantes, datosMatriculas: req.datosMatriculas });
 };
 
 const vistaOtorgarBecas = (req, res) => {
-    res.render('otorgar-becas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosBecas: req.datosBecas, datosUsuarios: req.datosUsuarios, datosOtorgarBecas: req.datosOtorgarBecas });
+    res.render('otorgar-becas', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosBecas: req.datosBecas, datosEstudiantes: req.datosEstudiantes, datosOtorgarBecas: req.datosOtorgarBecas });
 };
 const vistaGraficos = (req, res) => {
     res.render('graficos', { usuarioLogin: req.usuarioLogin, esAlerta: false, esAlertaSinRecarga: false, datosEstudiantesBecados: req.datosEstudiantesBecados });
@@ -83,6 +69,9 @@ module.exports = {
     vistaLogin,
     vistaRegistroUsuarios,
     vistaUsuarios,
+    vistaSecretarias,
+    vistaDocentes,
+    vistaEstudiantes,
     vistaRoles,
     vistaCursos,
     vistaSyllabus,

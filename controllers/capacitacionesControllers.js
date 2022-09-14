@@ -198,8 +198,36 @@ const inactivacionCapacitacion = async (req, res) => {
         });
 };
 
+const eliminarCapacitacion = async (req, res) => {
+    let sql = `DELETE FROM CAPACITACIONES WHERE id_capacitacion=$1;`;
+    const { id } = req.query;
+    console.log(`ELIMINAR++++>>>${id} `);
+
+    db.query(sql, [id])
+        .then((results) => {
+            res.redirect('/capacitaciones');
+        })
+        .catch((error) => {
+            res.render('capacitaciones', {
+                esAlerta: false,
+                esAlertaSinRecarga: true,
+                alertaTitulo: 'Error inesperado',
+                alertaMensaje: `Mensaje: ${error.message}`,
+                alertaIcono: 'error',
+                mostrarBotonConfirmacion: true,
+                timer: false,
+                usuarioLogin: req.usuarioLogin,
+                datosCapacitaciones: req.datosCapacitaciones,
+                datosCursos: req.datosCursos,
+                datosHorarios: req.datosHorarios,
+                datosDocentes: req.datosDocentes,
+            });
+        });
+};
+
 module.exports = {
     consultarCapacitaciones,
     accionesCapacitaciones,
     inactivacionCapacitacion,
+    eliminarCapacitacion,
 };

@@ -38,10 +38,10 @@ const consultarUsuarios = async (req, res, next) => {
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
-                    req.datosUsuarios = [];
+                    req.datosDocentes = [];
                     return next();
                 } else {
-                    req.datosUsuarios = results.rows;
+                    req.datosDocentes = results.rows;
                     return next();
                 }
             }
@@ -59,10 +59,10 @@ const consultarSecretaria = async (req, res, next) => {
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
-                    req.datosUsuarios = [];
+                    req.datosDocentes = [];
                     return next();
                 } else {
-                    req.datosUsuarios = results.rows;
+                    req.datosDocentes = results.rows;
                     return next();
                 }
             }
@@ -80,10 +80,10 @@ const consultarDocentes = async (req, res, next) => {
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
-                    req.datosUsuarios = [];
+                    req.datosDocentes = [];
                     return next();
                 } else {
-                    req.datosUsuarios = results.rows;
+                    req.datosDocentes = results.rows;
                     return next();
                 }
             }
@@ -101,10 +101,10 @@ const consultarEstudiantes = async (req, res, next) => {
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
-                    req.datosUsuarios = [];
+                    req.datosDocentes = [];
                     return next();
                 } else {
-                    req.datosUsuarios = results.rows;
+                    req.datosDocentes = results.rows;
                     return next();
                 }
             }
@@ -129,7 +129,7 @@ const accionesUsuarios = async (req, res) => {
                 mostrarBotonConfirmacion: true,
                 timer: false,
                 usuarioLogin: req.usuarioLogin,
-                datosUsuarios: req.datosUsuarios,
+                datosDocentes: req.datosDocentes,
             });
         } else {
             if (validarCedula(cedulaUsuario)) {
@@ -160,7 +160,7 @@ const accionesUsuarios = async (req, res) => {
                                 timer: 2000,
                                 rutaRedireccion: 'usuarios',
                                 usuarioLogin: req.usuarioLogin,
-                                datosUsuarios: req.datosUsuarios,
+                                datosDocentes: req.datosDocentes,
                             });
                         })
                         .catch((error) => {
@@ -176,7 +176,7 @@ const accionesUsuarios = async (req, res) => {
                                     mostrarBotonConfirmacion: true,
                                     timer: false,
                                     usuarioLogin: req.usuarioLogin,
-                                    datosUsuarios: req.datosUsuarios,
+                                    datosDocentes: req.datosDocentes,
                                 });
                             } else {
                                 res.render('usuarios', {
@@ -188,7 +188,7 @@ const accionesUsuarios = async (req, res) => {
                                     mostrarBotonConfirmacion: true,
                                     timer: false,
                                     usuarioLogin: req.usuarioLogin,
-                                    datosUsuarios: req.datosUsuarios,
+                                    datosDocentes: req.datosDocentes,
                                 });
                             }
                         });
@@ -209,7 +209,7 @@ const accionesUsuarios = async (req, res) => {
                                 timer: 2000,
                                 rutaRedireccion: 'usuarios',
                                 usuarioLogin: req.usuarioLogin,
-                                datosUsuarios: req.datosUsuarios,
+                                datosDocentes: req.datosDocentes,
                             });
                         })
                         .catch((error) => {
@@ -225,7 +225,7 @@ const accionesUsuarios = async (req, res) => {
                                     mostrarBotonConfirmacion: true,
                                     timer: false,
                                     usuarioLogin: req.usuarioLogin,
-                                    datosUsuarios: req.datosUsuarios,
+                                    datosDocentes: req.datosDocentes,
                                 });
                             } else {
                                 res.render('usuarios', {
@@ -237,7 +237,7 @@ const accionesUsuarios = async (req, res) => {
                                     mostrarBotonConfirmacion: true,
                                     timer: false,
                                     usuarioLogin: req.usuarioLogin,
-                                    datosUsuarios: req.datosUsuarios,
+                                    datosDocentes: req.datosDocentes,
                                 });
                             }
                         });
@@ -252,7 +252,7 @@ const accionesUsuarios = async (req, res) => {
                     mostrarBotonConfirmacion: true,
                     timer: false,
                     usuarioLogin: req.usuarioLogin,
-                    datosUsuarios: req.datosUsuarios,
+                    datosDocentes: req.datosDocentes,
                 });
             }
         }
@@ -263,6 +263,7 @@ const accionesUsuarios = async (req, res) => {
 
 const inactivacionUsuario = async (req, res) => {
     let sql = ``;
+
     const { id, estado } = req.query;
     console.log(`INACTIVACION++++>>>${id} , ${estado}`);
     if (estado == 'S') {
@@ -270,9 +271,10 @@ const inactivacionUsuario = async (req, res) => {
     } else {
         sql = `UPDATE USUARIOS set estado='S' WHERE id_usuario=$1`;
     }
+
     db.query(sql, [id])
         .then((results) => {
-            res.redirect('/usuarios');
+            res.redirect(`/docentes`);
         })
         .catch((error) => {
             res.render('usuarios', {
@@ -283,9 +285,9 @@ const inactivacionUsuario = async (req, res) => {
                 alertaIcono: 'error',
                 mostrarBotonConfirmacion: true,
                 timer: false,
-                rutaRedireccion: 'usuarios',
+                rutaRedireccion: 'docentes',
                 usuarioLogin: req.usuarioLogin,
-                datosUsuarios: req.datosUsuarios,
+                datosDocentes: req.datosDocentes,
             });
         });
 };

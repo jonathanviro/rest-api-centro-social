@@ -57,38 +57,106 @@ const accionesOtorgarBecas = async (req, res) => {
                 const valores = [estadoBeca, idBecaOtorgada];
                 console.log(`MODIFICACION++++>>>${idBecaOtorgada}, ${estadoBeca}`);
 
-                db.query(sql, valores)
-                    .then((results) => {
-                        res.render('otorgar-becas', {
-                            esAlerta: true,
-                            esAlertaSinRecarga: false,
-                            alertaTitulo: 'Modificación exitosa',
-                            alertaMensaje: 'El estado de la beca ha sido modifica correctamente',
-                            alertaIcono: 'success',
-                            mostrarBotonConfirmacion: false,
-                            timer: 2000,
-                            rutaRedireccion: 'otorgar-becas',
-                            usuarioLogin: req.usuarioLogin,
-                            datosOtorgarBecas: req.datosOtorgarBecas,
-                            datosBecas: req.datosBecas,
-                            datosEstudiantes: req.datosEstudiantes,
-                        });
-                    })
-                    .catch((error) => {
-                        res.render('otorgar-becas', {
-                            esAlerta: false,
-                            esAlertaSinRecarga: true,
-                            alertaTitulo: 'Error inesperado',
-                            alertaMensaje: `Mensaje: ${error.message}`,
-                            alertaIcono: 'error',
-                            mostrarBotonConfirmacion: true,
-                            timer: false,
-                            usuarioLogin: req.usuarioLogin,
-                            datosOtorgarBecas: req.datosOtorgarBecas,
-                            datosBecas: req.datosBecas,
-                            datosEstudiantes: req.datosEstudiantes,
-                        });
+                const sqlTodosLosPath = `SELECT * from becas_otorgadas where id_beca_otorgada=$1`;
+
+                if (estadoBeca == 'A') {
+                    db.query(sqlTodosLosPath, [idBecaOtorgada], async (errorPath, resultsPath) => {
+                        const resultadoPath = resultsPath.rows[0];
+                        console.log(`Estado ------------> ${resultadoPath.path_pdf_papeleta_votacion}`);
+                        if (
+                            !resultadoPath.path_pdf_cedula ||
+                            !resultadoPath.path_pdf_papeleta_votacion ||
+                            !resultadoPath.path_pdf_solicitud_beca ||
+                            !resultadoPath.path_pdf_croquis ||
+                            !resultadoPath.path_pdf_planilla ||
+                            resultadoPath.path_pdf_cedula == '' ||
+                            resultadoPath.path_pdf_papeleta_votacion == '' ||
+                            resultadoPath.path_pdf_solicitud_beca == '' ||
+                            resultadoPath.path_pdf_croquis == '' ||
+                            resultadoPath.path_pdf_planilla == ''
+                        ) {
+                            res.render('otorgar-becas', {
+                                esAlerta: false,
+                                esAlertaSinRecarga: true,
+                                alertaTitulo: 'Error al Aprobar',
+                                alertaMensaje: 'No se puede aprobar la beca ya que no tiene los documentos completos',
+                                alertaIcono: 'error',
+                                mostrarBotonConfirmacion: true,
+                                timer: false,
+                                usuarioLogin: req.usuarioLogin,
+                                datosOtorgarBecas: req.datosOtorgarBecas,
+                                datosBecas: req.datosBecas,
+                                datosEstudiantes: req.datosEstudiantes,
+                            });
+                        } else {
+                            db.query(sql, valores)
+                                .then((results) => {
+                                    res.render('otorgar-becas', {
+                                        esAlerta: true,
+                                        esAlertaSinRecarga: false,
+                                        alertaTitulo: 'Modificación exitosa',
+                                        alertaMensaje: 'El estado de la beca ha sido modifica correctamente',
+                                        alertaIcono: 'success',
+                                        mostrarBotonConfirmacion: false,
+                                        timer: 2000,
+                                        rutaRedireccion: 'otorgar-becas',
+                                        usuarioLogin: req.usuarioLogin,
+                                        datosOtorgarBecas: req.datosOtorgarBecas,
+                                        datosBecas: req.datosBecas,
+                                        datosEstudiantes: req.datosEstudiantes,
+                                    });
+                                })
+                                .catch((error) => {
+                                    res.render('otorgar-becas', {
+                                        esAlerta: false,
+                                        esAlertaSinRecarga: true,
+                                        alertaTitulo: 'Error inesperado',
+                                        alertaMensaje: `Mensaje: ${error.message}`,
+                                        alertaIcono: 'error',
+                                        mostrarBotonConfirmacion: true,
+                                        timer: false,
+                                        usuarioLogin: req.usuarioLogin,
+                                        datosOtorgarBecas: req.datosOtorgarBecas,
+                                        datosBecas: req.datosBecas,
+                                        datosEstudiantes: req.datosEstudiantes,
+                                    });
+                                });
+                        }
                     });
+                } else {
+                    db.query(sql, valores)
+                        .then((results) => {
+                            res.render('otorgar-becas', {
+                                esAlerta: true,
+                                esAlertaSinRecarga: false,
+                                alertaTitulo: 'Modificación exitosa',
+                                alertaMensaje: 'El estado de la beca ha sido modifica correctamente',
+                                alertaIcono: 'success',
+                                mostrarBotonConfirmacion: false,
+                                timer: 2000,
+                                rutaRedireccion: 'otorgar-becas',
+                                usuarioLogin: req.usuarioLogin,
+                                datosOtorgarBecas: req.datosOtorgarBecas,
+                                datosBecas: req.datosBecas,
+                                datosEstudiantes: req.datosEstudiantes,
+                            });
+                        })
+                        .catch((error) => {
+                            res.render('otorgar-becas', {
+                                esAlerta: false,
+                                esAlertaSinRecarga: true,
+                                alertaTitulo: 'Error inesperado',
+                                alertaMensaje: `Mensaje: ${error.message}`,
+                                alertaIcono: 'error',
+                                mostrarBotonConfirmacion: true,
+                                timer: false,
+                                usuarioLogin: req.usuarioLogin,
+                                datosOtorgarBecas: req.datosOtorgarBecas,
+                                datosBecas: req.datosBecas,
+                                datosEstudiantes: req.datosEstudiantes,
+                            });
+                        });
+                }
             } else {
                 const sql = `select * from becas_otorgadas where id_usuario_estudiante = $1 and estado = $2`;
                 const valores = [idEstudiante, 'S'];
@@ -161,7 +229,7 @@ const accionesOtorgarBecas = async (req, res) => {
     }
 };
 
-const inactivarBeca = async (req, res) => {
+const inactivarBecaOtorgada = async (req, res) => {
     let sql = ``;
     const { id, estado } = req.query;
     console.log(`INACTIVACION++++>>>${id} , ${estado}`);
@@ -191,7 +259,7 @@ const inactivarBeca = async (req, res) => {
         });
 };
 
-const eliminarBeca = async (req, res) => {
+const eliminarBecaOtorgada = async (req, res) => {
     let sql = `DELETE FROM becas_otorgadas WHERE id_beca_otorgada=$1;`;
     const { id } = req.query;
     console.log(`ELIMINAR++++>>>${id} `);
@@ -220,6 +288,6 @@ const eliminarBeca = async (req, res) => {
 module.exports = {
     consultarBecasOtorgadas,
     accionesOtorgarBecas,
-    inactivarBeca,
-    eliminarBeca,
+    inactivarBecaOtorgada,
+    eliminarBecaOtorgada,
 };

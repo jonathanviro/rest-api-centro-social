@@ -114,7 +114,7 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="text-black font-w600 form-label" for="idCapacitacion">Capacitación<span class="required">*</span></label>
-                                            <select id="selectCrearCapacitacion" class="form-select" name="idCapacitacion">
+                                            <select onchange="setearHorario()" id="selectCrearCapacitacion" class="form-select" name="idCapacitacion">
                                                 <option value="0">Seleccione una capacitación...</option>
                                                 <% datosCapacitaciones.forEach((capacitacion) => { %>
                                                 <option value="<%= capacitacion.id_capacitacion%>"><%= capacitacion.nombre%></option>
@@ -122,15 +122,22 @@
                                             </select>
                                         </div>
                                     </div>
+
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label class="text-black font-w600 form-label" for="idEstudiante">Estudiantes<span class="required">*</span></label>
                                             <select id="selectCrearEstudiante" class="form-select" name="idEstudiante">
                                                 <option value="0">Seleccione un estudiante...</option>
-                                                <% datosUsuarios.forEach((estudiante) => { %>
+                                                <% datosEstudiantes.forEach((estudiante) => { %>
                                                 <option id="<%= estudiante.id_usuario%>" value="<%= estudiante.id_usuario%>"><%= estudiante.cedula + ' - ' + estudiante.nombres + ' ' + estudiante.apellidos%></option>
                                                 <% }) %>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="text-black font-w600 form-label">Horario</label>
+                                            <input id="inputIdHorario" type="text" class="form-control" disabled />
                                         </div>
                                     </div>
                                 </div>
@@ -172,7 +179,7 @@
                                             <label class="text-black font-w600 form-label" for="idEstudiante">Estudiantes<span class="required">*</span></label>
                                             <select id="selectModificarEstudiante" class="form-select" name="idEstudiante">
                                                 <option value="0">Seleccione un estudiante...</option>
-                                                <% datosUsuarios.forEach((estudiante) => { %>
+                                                <% datosEstudiantes.forEach((estudiante) => { %>
                                                 <option value="<%= estudiante.id_usuario%>"><%= estudiante.cedula + ' - ' + estudiante.nombres + ' ' + estudiante.apellidos%></option>
                                                 <% }) %>
                                             </select>
@@ -235,12 +242,58 @@
         <%}%>
 
         <script>
+            let objCapacitaciones = [];
+            let objDatosCapacitacion = {};
+            let objHorarios = [];
+            let objDatosHorario = {};
+
+            <% datosCapacitaciones.forEach((capacitacion) => { %>
+                objDatosCapacitacion.idCapacitacion = <%= capacitacion.id_capacitacion%>
+                objDatosCapacitacion.nombre = '<%= capacitacion.nombre%>'
+                objDatosCapacitacion.idHorario = <%= capacitacion.id_horario%>
+                objCapacitaciones.push(objDatosCapacitacion);
+                objDatosCapacitacion = {};
+            <% }) %>
+            // console.log(objCapacitaciones);
+
+            <% datosHorarios.forEach((horario) => { %>
+                objDatosHorario.idHorario = <%= horario.id_horario%>
+                objDatosHorario.nombre = '<%= horario.descripcion%>'
+                objHorarios.push(objDatosHorario);
+                objDatosHorario = {};
+            <% }) %>
+            // console.log(objHorarios);
+
+
+            function setearHorario() {
+                let opcion = document.querySelector('#selectCrearCapacitacion').value;
+                let inputHorario = document.querySelector('#inputIdHorario');
+                // console.log(opcion);
+
+                if(opcion == 0){
+                    inputHorario.setAttribute('value', '');
+                }else{
+                    objCapacitaciones.forEach((cap)=>{
+                        if(cap.idCapacitacion == opcion){
+                            // console.log(cap);
+                            objHorarios.forEach((hora) => {
+                                if(hora.idHorario == cap.idHorario){
+                                    // console.log(hora)
+                                    inputHorario.setAttribute('value', hora.nombre);
+                                }
+                            })
+                        }
+                    })
+                }
+
+            }
+
             function confirmar(id, estado) {
                 let mensaje = ``;
                 if (estado == 'S') {
-                    mensaje = 'Seguro que desea inactivar la capacitacion?';
+                    mensaje = 'Seguro que desea inactivar la matrícula?';
                 } else {
-                    mensaje = 'Seguro que desea activar la capacitacion?';
+                    mensaje = 'Seguro que desea activar la matrícula?';
                 }
 
                 Swal.fire({

@@ -2,7 +2,7 @@ const db = require('../database/postgresql.pool');
 
 const consultarCursos = async (req, res, next) => {
     try {
-        const sql = `SELECT * FROM CURSOS WHERE estado='S' ORDER BY id_curso DESC;`;
+        const sql = `SELECT * FROM CURSOS ORDER BY id_curso DESC;`;
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
@@ -149,10 +149,17 @@ const accionesCursos = async (req, res) => {
 };
 
 const inactivacionCurso = async (req, res) => {
-    const sql = `UPDATE CURSOS set estado='N' WHERE id_curso=$1`;
-    const idCurso = req.params.id;
-    console.log(`INACTIVACION++++>>>${idCurso}`);
-    db.query(sql, [idCurso])
+    let sql = ``;
+
+    const { id, estado } = req.query;
+    console.log(`INACTIVACION++++>>>${id} , ${estado}`);
+    if (estado == 'S') {
+        sql = `UPDATE CURSOS set estado='N' WHERE id_curso=$1`;
+    } else {
+        sql = `UPDATE CURSOS set estado='S' WHERE id_curso=$1`;
+    }
+
+    db.query(sql, [id])
         .then((results) => {
             res.redirect('/cursos');
         })
@@ -172,8 +179,33 @@ const inactivacionCurso = async (req, res) => {
         });
 };
 
+const eliminarCurso = async (req, res) => {
+    let sql = `DELETE FROM CURSOS WHERE id_curso=$1;`;
+    const { id } = req.query;
+    console.log(`ELIMINAR++++>>>${id} `);
+
+    db.query(sql, [id])
+        .then((results) => {
+            res.redirect('/cursos');
+        })
+        .catch((error) => {
+            res.render('cursos', {
+                esAlerta: false,
+                esAlertaSinRecarga: true,
+                alertaTitulo: 'Error inesperado',
+                alertaMensaje: `Mensaje: ${error.message}`,
+                alertaIcono: 'error',
+                mostrarBotonConfirmacion: true,
+                timer: false,
+                usuarioLogin: req.usuarioLogin,
+                datosCursos: req.datosCursos,
+            });
+        });
+};
+
 module.exports = {
     consultarCursos,
     accionesCursos,
     inactivacionCurso,
+    eliminarCurso,
 };

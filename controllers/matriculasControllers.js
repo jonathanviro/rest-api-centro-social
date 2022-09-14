@@ -6,7 +6,8 @@ const consultarMatriculas = async (req, res, next) => {
                         from matriculas ma, usuarios u, capacitaciones ca
                         where u.id_rol = 5
                         and ma.id_usuario_estudiante = u.id_usuario
-                        and ma.id_capacitacion = ca.id_capacitacion`;
+                        and ma.id_capacitacion = ca.id_capacitacion
+                        ORDER BY ma.id_matricula DESC`;
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
@@ -24,30 +25,10 @@ const consultarMatriculas = async (req, res, next) => {
     }
 };
 
-const matriculaExiste = async (idCapacitacion, idEstudiante) => {
-    //const sql = `select * from matriculas where id_capacitacion = $1 and id_usuario_estudiante = $2 and estado = $3`;
-    //const valores = [idCapacitacion, idEstudiante, 'S'];
-    console.log(`-----------------> ${idEstudiante}`);
-    const sql = `select * from matriculas where id_usuario_estudiante = $1 and estado = $2`;
-    const valores = [idEstudiante, 'S'];
-
-    db.query(sql, valores, async (error, results) => {
-        if (!error) {
-            if (results.rowCount == 0) {
-                console.log('----------------->No existe');
-                return false;
-            } else {
-                console.log('----------------->Existe');
-                return true;
-            }
-        }
-    });
-};
-
 const accionesMatriculas = async (req, res) => {
     try {
         let { accion, idMatricula, idCapacitacion, idEstudiante } = req.body;
-        console.log(req.body);
+        // console.log(req.body);
         if (!idCapacitacion || !idEstudiante || idCapacitacion == 0 || idEstudiante == 0) {
             res.render('matriculas', {
                 esAlerta: false,
@@ -60,9 +41,13 @@ const accionesMatriculas = async (req, res) => {
                 usuarioLogin: req.usuarioLogin,
                 datosMatriculas: req.datosMatriculas,
                 datosCapacitaciones: req.datosCapacitaciones,
+                datosHorarios: req.datosHorarios,
                 datosEstudiantes: req.datosEstudiantes,
             });
         } else {
+            const sqlCuposCapacitaciones = `SELECT ca.cupos FROM capacitaciones ca WHERE ca.id_capacitacion = $1;`;
+            const sqlCuposUsadosCapacitaciones = `SELECT count(*) as cupos_usados FROM matriculas ma WHERE ma.id_capacitacion = $1;`;
+
             const sql = `select * from matriculas where id_usuario_estudiante = $1 and estado = $2`;
             const valores = [idEstudiante, 'S'];
 
@@ -71,42 +56,76 @@ const accionesMatriculas = async (req, res) => {
                     if (resultsValidacion.rowCount == 0) {
                         console.log('----------------->No Existe');
                         if (accion === 'insertar') {
-                            const sql = `INSERT INTO matriculas(id_capacitacion, id_usuario_estudiante, estado) VALUES ($1, $2, $3);`;
-                            const valores = [idCapacitacion, idEstudiante, 'S'];
-                            console.log(`CREACION++++>>>${idCapacitacion}, ${idEstudiante}`);
+                            db.query(sqlCuposCapacitaciones, [idCapacitacion], async (errorCupos, resultsCupos) => {
+                                let cuposCapacitaciones = resultsCupos.rows[0].cupos;
+                                // console.log(cuposCapacitaciones);
 
-                            db.query(sql, valores)
-                                .then((results) => {
-                                    res.render('matriculas', {
-                                        esAlerta: true,
-                                        esAlertaSinRecarga: false,
-                                        alertaTitulo: 'Registro exitoso',
-                                        alertaMensaje: 'La matrícula se agrego correctamente',
-                                        alertaIcono: 'success',
-                                        mostrarBotonConfirmacion: false,
-                                        timer: 2000,
-                                        rutaRedireccion: 'matriculas',
-                                        usuarioLogin: req.usuarioLogin,
-                                        datosMatriculas: req.datosMatriculas,
-                                        datosCapacitaciones: req.datosCapacitaciones,
-                                        datosEstudiantes: req.datosEstudiantes,
-                                    });
-                                })
-                                .catch((error) => {
-                                    res.render('matriculas', {
-                                        esAlerta: false,
-                                        esAlertaSinRecarga: true,
-                                        alertaTitulo: 'Error inesperado',
-                                        alertaMensaje: `Mensaje: ${error.message}`,
-                                        alertaIcono: 'error',
-                                        mostrarBotonConfirmacion: true,
-                                        timer: false,
-                                        usuarioLogin: req.usuarioLogin,
-                                        datosMatriculas: req.datosMatriculas,
-                                        datosCapacitaciones: req.datosCapacitaciones,
-                                        datosEstudiantes: req.datosEstudiantes,
-                                    });
+                                db.query(sqlCuposUsadosCapacitaciones, [idCapacitacion], async (errorCuposUsados, resultsCuposUsados) => {
+                                    let cuposUsadosCapacitaciones = Number.parseInt(resultsCuposUsados.rows[0].cupos_usados);
+                                    // console.log(cuposUsadosCapacitaciones);
+
+                                    let cuposRestantes = cuposCapacitaciones - cuposUsadosCapacitaciones;
+                                    // console.log(cuposRestantes);
+
+                                    if (cuposRestantes == 0) {
+                                        // console.log('No hay cupos');
+                                        res.render('matriculas', {
+                                            esAlerta: false,
+                                            esAlertaSinRecarga: true,
+                                            alertaTitulo: 'Cupos Agotados',
+                                            alertaMensaje: 'Ya no hay cupos disponibles para esta capacitación',
+                                            alertaIcono: 'error',
+                                            mostrarBotonConfirmacion: true,
+                                            timer: false,
+                                            usuarioLogin: req.usuarioLogin,
+                                            datosMatriculas: req.datosMatriculas,
+                                            datosCapacitaciones: req.datosCapacitaciones,
+                                            datosHorarios: req.datosHorarios,
+                                            datosEstudiantes: req.datosEstudiantes,
+                                        });
+                                    } else {
+                                        // console.log('Si hay cupos');
+                                        const sql = `INSERT INTO matriculas(id_capacitacion, id_usuario_estudiante, estado) VALUES ($1, $2, $3);`;
+                                        const valores = [idCapacitacion, idEstudiante, 'S'];
+                                        console.log(`CREACION++++>>>${idCapacitacion}, ${idEstudiante}`);
+
+                                        db.query(sql, valores)
+                                            .then((results) => {
+                                                res.render('matriculas', {
+                                                    esAlerta: true,
+                                                    esAlertaSinRecarga: false,
+                                                    alertaTitulo: 'Registro exitoso',
+                                                    alertaMensaje: 'La matrícula se agrego correctamente',
+                                                    alertaIcono: 'success',
+                                                    mostrarBotonConfirmacion: false,
+                                                    timer: 2000,
+                                                    rutaRedireccion: 'matriculas',
+                                                    usuarioLogin: req.usuarioLogin,
+                                                    datosMatriculas: req.datosMatriculas,
+                                                    datosCapacitaciones: req.datosCapacitaciones,
+                                                    datosHorarios: req.datosHorarios,
+                                                    datosEstudiantes: req.datosEstudiantes,
+                                                });
+                                            })
+                                            .catch((error) => {
+                                                res.render('matriculas', {
+                                                    esAlerta: false,
+                                                    esAlertaSinRecarga: true,
+                                                    alertaTitulo: 'Error inesperado',
+                                                    alertaMensaje: `Mensaje: ${error.message}`,
+                                                    alertaIcono: 'error',
+                                                    mostrarBotonConfirmacion: true,
+                                                    timer: false,
+                                                    usuarioLogin: req.usuarioLogin,
+                                                    datosMatriculas: req.datosMatriculas,
+                                                    datosCapacitaciones: req.datosCapacitaciones,
+                                                    datosHorarios: req.datosHorarios,
+                                                    datosEstudiantes: req.datosEstudiantes,
+                                                });
+                                            });
+                                    }
                                 });
+                            });
                         } else {
                             const sql = `UPDATE MATRICULAS set id_usuario_estudiante=$1, id_capacitacion=$2 WHERE id_matricula=$3`;
                             const valores = [idCapacitacion, idEstudiante, idMatricula];
@@ -126,6 +145,7 @@ const accionesMatriculas = async (req, res) => {
                                         usuarioLogin: req.usuarioLogin,
                                         datosMatriculas: req.datosMatriculas,
                                         datosCapacitaciones: req.datosCapacitaciones,
+                                        datosHorarios: req.datosHorarios,
                                         datosEstudiantes: req.datosEstudiantes,
                                     });
                                 })
@@ -141,6 +161,7 @@ const accionesMatriculas = async (req, res) => {
                                         usuarioLogin: req.usuarioLogin,
                                         datosMatriculas: req.datosMatriculas,
                                         datosCapacitaciones: req.datosCapacitaciones,
+                                        datosHorarios: req.datosHorarios,
                                         datosEstudiantes: req.datosEstudiantes,
                                     });
                                 });
@@ -158,6 +179,7 @@ const accionesMatriculas = async (req, res) => {
                             usuarioLogin: req.usuarioLogin,
                             datosMatriculas: req.datosMatriculas,
                             datosCapacitaciones: req.datosCapacitaciones,
+                            datosHorarios: req.datosHorarios,
                             datosEstudiantes: req.datosEstudiantes,
                         });
                         return true;
@@ -196,6 +218,7 @@ const inactivacionMatricula = async (req, res) => {
                 usuarioLogin: req.usuarioLogin,
                 datosMatriculas: req.datosMatriculas,
                 datosCapacitaciones: req.datosCapacitaciones,
+                datosHorarios: req.datosHorarios,
                 datosEstudiantes: req.datosEstudiantes,
             });
         });

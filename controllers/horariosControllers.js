@@ -2,7 +2,7 @@ const db = require('../database/postgresql.pool');
 
 const consultarHorarios = async (req, res, next) => {
     try {
-        const sql = `SELECT * FROM HORARIOS WHERE estado='S' ORDER BY id_horario DESC;`;
+        const sql = `SELECT * FROM HORARIOS ORDER BY id_horario DESC;`;
         db.query(sql, async (error, results) => {
             if (!error) {
                 if (results.rowCount == 0) {
@@ -205,10 +205,17 @@ const accionesHorarios = async (req, res) => {
 };
 
 const inactivacionHorario = async (req, res) => {
-    const sql = `UPDATE HORARIOS set estado='N' WHERE id_horario=$1`;
-    const idHorarioCabecera = req.params.id;
-    console.log(`INACTIVACION++++>>>${idHorarioCabecera}`);
-    db.query(sql, [idHorarioCabecera])
+    let sql = ``;
+
+    const { id, estado } = req.query;
+    console.log(`INACTIVACION++++>>>${id} , ${estado}`);
+    if (estado == 'S') {
+        sql = `UPDATE HORARIOS set estado='N' WHERE id_horario=$1`;
+    } else {
+        sql = `UPDATE HORARIOS set estado='S' WHERE id_horario=$1`;
+    }
+
+    db.query(sql, [id])
         .then((results) => {
             res.redirect('/horarios');
         })
@@ -228,8 +235,33 @@ const inactivacionHorario = async (req, res) => {
         });
 };
 
+const eliminarHorario = async (req, res) => {
+    let sql = `DELETE FROM HORARIOS WHERE id_horario=$1;`;
+    const { id } = req.query;
+    console.log(`ELIMINAR++++>>>${id} `);
+
+    db.query(sql, [id])
+        .then((results) => {
+            res.redirect('/horarios');
+        })
+        .catch((error) => {
+            res.render('horarios', {
+                esAlerta: false,
+                esAlertaSinRecarga: true,
+                alertaTitulo: 'Error inesperado',
+                alertaMensaje: `Mensaje: ${error.message}`,
+                alertaIcono: 'error',
+                mostrarBotonConfirmacion: true,
+                timer: false,
+                usuarioLogin: req.usuarioLogin,
+                datosHorarios: req.datosHorarios,
+            });
+        });
+};
+
 module.exports = {
     consultarHorarios,
     accionesHorarios,
     inactivacionHorario,
+    eliminarHorario,
 };

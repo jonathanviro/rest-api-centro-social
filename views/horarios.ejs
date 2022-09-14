@@ -60,7 +60,10 @@
                                                     <th>Viernes</th>
                                                     <th>Sabado</th>
                                                     <th>Domingo</th>
-                                                    <th>Acciones</th>
+                                                    <th>Estado</th>
+                                                    <% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
+                                                    <th>Accion</th>
+                                                    <% } %>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -76,13 +79,24 @@
                                                     <td><b>Inicio:</b><%= horario.viernes_hora_inicio.substring(0, 5)%>    </br> <b>Fin:</b> <%= horario.viernes_hora_fin.substring(0, 5)%></td>
                                                     <td><b>Inicio:</b><%= horario.sabado_hora_inicio.substring(0, 5)%>     </br> <b>Fin:</b> <%= horario.sabado_hora_fin.substring(0, 5)%></td>
                                                     <td><b>Inicio:</b><%= horario.domingo_hora_inicio.substring(0, 5)%>    </br> <b>Fin:</b> <%= horario.domingo_hora_fin.substring(0, 5)%></td>
+                                                    <% if(horario.estado == 'S'){%>
+                                                    <td>
+                                                        <span class="badge badge-success">Activo<span class="ms-1 fa fa-check"></span></span>
+                                                    </td>
+                                                    <% } else{%>
+                                                    <td>
+                                                        <span class="badge badge-danger">Inactivo<span class="ms-1 fa fa-ban"></span></span>
+                                                    </td>
+                                                    <%}%> <% if(usuarioLogin.id_rol != 4 && usuarioLogin.id_rol != 5){ %>
                                                     <td>
                                                         <div class="d-flex">
                                                             <a onclick="editar(<%= horario.id_horario %>, '<%= horario.descripcion %>', '<%= horario.lunes_hora_inicio.substring(0, 5)%>', '<%= horario.lunes_hora_fin.substring(0, 5)%>','<%= horario.martes_hora_inicio.substring(0, 5)%>', '<%= horario.martes_hora_fin.substring(0, 5)%>','<%= horario.miercoles_hora_inicio.substring(0, 5)%>', '<%= horario.miercoles_hora_fin.substring(0, 5)%>','<%= horario.jueves_hora_inicio.substring(0, 5)%>', '<%= horario.jueves_hora_fin.substring(0, 5)%>','<%= horario.viernes_hora_inicio.substring(0, 5)%>', '<%= horario.viernes_hora_fin.substring(0, 5)%>','<%= horario.sabado_hora_inicio.substring(0, 5)%>', '<%= horario.sabado_hora_fin.substring(0, 5)%>','<%= horario.domingo_hora_inicio.substring(0, 5)%>', '<%= horario.domingo_hora_fin.substring(0, 5)%>'
    )" class="btn btn-primary shadow btn-xs sharp me-1" data-bs-toggle="modal" data-bs-target="#modalModificarHorario"><i class="fas fa-pencil-alt"></i></a>
-                                                            <a onclick="confirmar(<%= horario.id_horario %>)" class="btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a>
+                                                            <a onclick="confirmarEliminacion(<%= horario.id_horario%>)" class="btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a>
+                                                            <a onclick="cambiarEstado(<%= horario.id_horario%>, '<%= horario.estado%>')" class="btn shadow btn-xs sharp"><i class="fas fa-ellipsis-v"></i></a>
                                                         </div>
                                                     </td>
+                                                    <% } %>
                                                 </tr>
                                                 <% }) %>
                                             </tbody>
@@ -385,9 +399,16 @@
         <%}%>
 
         <script>
-            function confirmar(id) {
+            function cambiarEstado(id, estado) {
+                let mensaje = ``;
+                if (estado == 'S') {
+                    mensaje = 'Seguro que desea inactivar el horario?';
+                } else {
+                    mensaje = 'Seguro que desea activar el horario?';
+                }
+
                 Swal.fire({
-                    title: 'Seguro que desea eliminar el registro?',
+                    title: mensaje,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -395,7 +416,22 @@
                     confirmButtonText: 'Confirmar',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location = '/inactivar-horario/' + id;
+                        window.location = `/inactivar-horario?id=${id}&estado=${estado}`;
+                    }
+                });
+            }
+
+            function confirmarEliminacion(id) {
+                Swal.fire({
+                    title: 'Seguro que desea eliminar el horario?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location = `/eliminar-horario?id=${id}`;
                     }
                 });
             }

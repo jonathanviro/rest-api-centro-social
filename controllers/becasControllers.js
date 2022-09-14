@@ -178,8 +178,34 @@ const inactivacionBeca = async (req, res) => {
         });
 };
 
+const eliminarBeca = async (req, res) => {
+    let sql = `DELETE FROM BECAS WHERE id_beca=$1;`;
+    const { id } = req.query;
+    console.log(`ELIMINAR++++>>>${id} `);
+
+    db.query(sql, [id])
+        .then((results) => {
+            res.redirect('/becas');
+        })
+        .catch((error) => {
+            res.render('becas', {
+                esAlerta: false,
+                esAlertaSinRecarga: true,
+                alertaTitulo: 'Error inesperado',
+                alertaMensaje: `Mensaje: ${error.message}`,
+                alertaIcono: 'error',
+                mostrarBotonConfirmacion: true,
+                timer: false,
+                usuarioLogin: req.usuarioLogin,
+                datosBecas: req.datosBecas,
+                datosCursos: req.datosCursos,
+            });
+        });
+};
+
 module.exports = {
     consultarBecas,
     accionesBecas,
     inactivacionBeca,
+    eliminarBeca,
 };
