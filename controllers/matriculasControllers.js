@@ -224,8 +224,36 @@ const inactivacionMatricula = async (req, res) => {
         });
 };
 
+const eliminarMatricula = async (req, res) => {
+    let sql = `DELETE FROM MATRICULAS WHERE id_matricula=$1;`;
+    const { id } = req.query;
+    console.log(`ELIMINAR++++>>>${id} `);
+
+    db.query(sql, [id])
+        .then((results) => {
+            res.redirect('/matriculas');
+        })
+        .catch((error) => {
+            res.render('matriculas', {
+                esAlerta: false,
+                esAlertaSinRecarga: true,
+                alertaTitulo: 'Error inesperado',
+                alertaMensaje: `Mensaje: ${error.message}`,
+                alertaIcono: 'error',
+                mostrarBotonConfirmacion: true,
+                timer: false,
+                usuarioLogin: req.usuarioLogin,
+                datosMatriculas: req.datosMatriculas,
+                datosCapacitaciones: req.datosCapacitaciones,
+                datosHorarios: req.datosHorarios,
+                datosEstudiantes: req.datosEstudiantes,
+            });
+        });
+};
+
 module.exports = {
     consultarMatriculas,
     accionesMatriculas,
     inactivacionMatricula,
+    eliminarMatricula,
 };

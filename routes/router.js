@@ -13,7 +13,7 @@ const { consultarSyllabus, accionesSyllabus, inactivacionSyllabu, eliminarSyllab
 const { consultarHorarios, accionesHorarios, inactivacionHorario, eliminarHorario } = require('../controllers/horariosControllers');
 const { consultarCapacitaciones, accionesCapacitaciones, inactivacionCapacitacion, eliminarCapacitacion } = require('../controllers/capacitacionesControllers');
 const { consultarBecas, accionesBecas, inactivacionBeca, eliminarBeca } = require('../controllers/becasControllers');
-const { consultarMatriculas, accionesMatriculas, inactivacionMatricula } = require('../controllers/matriculasControllers');
+const { consultarMatriculas, accionesMatriculas, inactivacionMatricula, eliminarMatricula } = require('../controllers/matriculasControllers');
 const { consultarBecasOtorgadas, accionesOtorgarBecas, eliminarBecaOtorgada } = require('../controllers/otorgarBecasControllers');
 const { consultarEstudiantesBecados, consultarEstudiantesFinanciamiento, consultarEstudiantesInscritos, consultarCapacitacionesDemandadas } = require('../controllers/graficosControllers');
 const { reporteEstudiantesBecados } = require('../controllers/reportesControllers');
@@ -96,6 +96,7 @@ router.get('/inactivar-beca/', estaAutenticado, consultarCursos, consultarBecas,
 
 //Definimos las rutas para los metodos de los controller de matriculas
 router.post('/matriculas', estaAutenticado, consultarCapacitaciones, consultarHorarios, consultarEstudiantes, consultarMatriculas, accionesMatriculas);
+router.get('/eliminar-matricula/', estaAutenticado, consultarCapacitaciones, consultarHorarios, consultarEstudiantes, consultarMatriculas, eliminarMatricula);
 router.get('/inactivar-matricula/', estaAutenticado, consultarCapacitaciones, consultarHorarios, consultarEstudiantes, consultarMatriculas, inactivacionMatricula);
 
 //Definimos las rutas para los metodos de los controller de otorgar becas
