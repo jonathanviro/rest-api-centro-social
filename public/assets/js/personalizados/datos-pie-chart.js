@@ -1,3 +1,8 @@
+let arrEstudiantesBecados = [];
+let arrEstudiantesFinanciados = [];
+let arrEstudiantesInscritos = [];
+let arrCapacitacionDemandada = [];
+
 //OBTENER DATOS DE ESTUDIANTES BECADOS
 let urlBecados = `http://localhost:3000/estudiantes-becados`;
 
@@ -29,6 +34,8 @@ const mostrarBecados = (datosBD) => {
     datosBD.forEach((element) => {
         myChartBecados.data['labels'].push(element.nombre);
         myChartBecados.data['datasets'][0].data.push(element.valor);
+
+        arrEstudiantesBecados.push(element);
     });
     myChartBecados.update();
 };
@@ -64,7 +71,10 @@ const mostrarPorcentajesBecas = (datosBD) => {
     datosBD.forEach((element) => {
         myChartPorcentajes.data['labels'].push(element.nombre);
         myChartPorcentajes.data['datasets'][0].data.push(element.cantidad);
+
+        arrEstudiantesFinanciados.push(element);
     });
+    // console.log(arrEstudiantesFinanciados);
     myChartPorcentajes.update();
 };
 
@@ -99,7 +109,10 @@ const mostrarInscripciones = (datosBD) => {
     datosBD.forEach((element) => {
         myChartInscripciones.data['labels'].push(element.nombre);
         myChartInscripciones.data['datasets'][0].data.push(element.cantidad);
+
+        arrEstudiantesInscritos.push(element);
     });
+    // console.log(arrEstudiantesInscritos);
     myChartInscripciones.update();
 };
 
@@ -149,7 +162,182 @@ const mostrarCapacitaciones = (datosBD) => {
     arrayMayorDemanda.forEach((element) => {
         myChartCapacitaciones.data['labels'].push(element.nombre);
         myChartCapacitaciones.data['datasets'][0].data.push(element.cantidad);
+
+        arrCapacitacionDemandada.push(element);
+    });
+    // console.log(arrCapacitacionDemandada);
+    myChartCapacitaciones.update();
+};
+
+const descargarPdfEstudiantesBecados = () => {
+    //Se crea un nuevo objeto canvas
+    let pdfCanvas = $('<canvas />').attr({
+        id: 'canvaspdf',
+        width: 1000,
+        height: 500,
     });
 
-    myChartCapacitaciones.update();
+    // keep track canvas position
+    let pdfctx = $(pdfCanvas)[0].getContext('2d');
+    let pdfctxX = 100;
+    let pdfctxY = 150;
+    let buffer = 100;
+
+    // get the chart height/width
+    let canvasHeight = 156;
+    let canvasWidth = 600;
+
+    // draw the chart into the new canvas
+    pdfctx.drawImage($('#grafico-becados')[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+    pdfctxX += canvasWidth + buffer;
+
+    // create new pdf and add our new canvas as an image
+    let pdf = new jsPDF('p', 'mm', 'a4');
+    pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+
+    //insertar Texto
+    pdf.setFontSize(22);
+    pdf.text(50, 25, 'Reporte de Estudiantes Becados');
+
+    pdf.setFontSize(10);
+
+    let linea = 0;
+
+    arrEstudiantesBecados.forEach((element) => {
+        // console.log(`${element.nombre}: ${element.valor}`);
+        pdf.text(20, 100 + linea, `- ESTUDIANTES ${element.nombre}: ${element.valor}`);
+        linea = linea + 10;
+    });
+
+    // download the pdf
+    pdf.save('Estudiantes-Becados.pdf');
+};
+
+const descargarPdfEstudiantesFinanciados = () => {
+    //Se crea un nuevo objeto canvas
+    let pdfCanvas = $('<canvas />').attr({
+        id: 'canvaspdf',
+        width: 1000,
+        height: 500,
+    });
+
+    // keep track canvas position
+    let pdfctx = $(pdfCanvas)[0].getContext('2d');
+    let pdfctxX = 100;
+    let pdfctxY = 150;
+    let buffer = 100;
+
+    // get the chart height/width
+    let canvasHeight = 156;
+    let canvasWidth = 600;
+
+    // draw the chart into the new canvas
+    pdfctx.drawImage($('#grafico-financiamiento')[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+    pdfctxX += canvasWidth + buffer;
+
+    // create new pdf and add our new canvas as an image
+    let pdf = new jsPDF('p', 'mm', 'a4');
+    pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+
+    //insertar Texto
+    pdf.setFontSize(22);
+    pdf.text(30, 25, 'Reporte de Estudiantes con Financiamiento');
+
+    pdf.setFontSize(10);
+
+    let linea = 0;
+
+    arrEstudiantesFinanciados.forEach((element) => {
+        pdf.text(20, 100 + linea, `- ESTUDIANTES CON ${element.nombre} DE FINANCIAMIENTO: ${element.cantidad}`);
+        linea = linea + 10;
+    });
+
+    // download the pdf
+    pdf.save('Estudiantes-Financiados.pdf');
+};
+
+const descargarPdfEstudiantesInscritos = () => {
+    //Se crea un nuevo objeto canvas
+    let pdfCanvas = $('<canvas />').attr({
+        id: 'canvaspdf',
+        width: 1000,
+        height: 500,
+    });
+
+    // keep track canvas position
+    let pdfctx = $(pdfCanvas)[0].getContext('2d');
+    let pdfctxX = 100;
+    let pdfctxY = 150;
+    let buffer = 100;
+
+    // get the chart height/width
+    let canvasHeight = 156;
+    let canvasWidth = 600;
+
+    // draw the chart into the new canvas
+    pdfctx.drawImage($('#grafico-inscripciones')[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+    pdfctxX += canvasWidth + buffer;
+
+    // create new pdf and add our new canvas as an image
+    let pdf = new jsPDF('p', 'mm', 'a4');
+    pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+
+    //insertar Texto
+    pdf.setFontSize(22);
+    pdf.text(30, 25, 'Reporte de estudiantes inscritos en los cursos');
+
+    pdf.setFontSize(10);
+
+    let linea = 0;
+
+    arrEstudiantesInscritos.forEach((element) => {
+        pdf.text(20, 100 + linea, `- ESTUDIANTES DEL CURSO DE "${element.nombre}": ${element.cantidad}`);
+        linea = linea + 10;
+    });
+
+    // download the pdf
+    pdf.save('Estudiantes-Inscritos.pdf');
+};
+
+const descargarPdfCapacitacionesDemandadas = () => {
+    //Se crea un nuevo objeto canvas
+    let pdfCanvas = $('<canvas />').attr({
+        id: 'canvaspdf',
+        width: 1000,
+        height: 500,
+    });
+
+    // keep track canvas position
+    let pdfctx = $(pdfCanvas)[0].getContext('2d');
+    let pdfctxX = 100;
+    let pdfctxY = 150;
+    let buffer = 100;
+
+    // get the chart height/width
+    let canvasHeight = 156;
+    let canvasWidth = 600;
+
+    // draw the chart into the new canvas
+    pdfctx.drawImage($('#grafico-capacitaciones')[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+    pdfctxX += canvasWidth + buffer;
+
+    // create new pdf and add our new canvas as an image
+    let pdf = new jsPDF('p', 'mm', 'a4');
+    pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+
+    //insertar Texto
+    pdf.setFontSize(22);
+    pdf.text(30, 25, 'Reporte de capacitaciones demandas');
+
+    pdf.setFontSize(10);
+
+    let linea = 0;
+
+    arrCapacitacionDemandada.forEach((element) => {
+        pdf.text(20, 100 + linea, `- ${element.nombre}: ${element.cantidad}`);
+        linea = linea + 10;
+    });
+
+    // download the pdf
+    pdf.save('Capacitaciones-Demandadas.pdf');
 };
