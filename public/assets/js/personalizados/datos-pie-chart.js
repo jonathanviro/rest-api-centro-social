@@ -196,8 +196,8 @@ const descargarPdfEstudiantesBecados = () => {
     pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
 
     //insertar Texto
-    pdf.setFontSize(22);
-    pdf.text(50, 25, 'Reporte de Estudiantes Becados');
+    pdf.setFontSize(18);
+    pdf.text(45, 25, 'REPORTE DE ESTUDIANTES BECADOS');
 
     pdf.setFontSize(10);
 
@@ -240,8 +240,8 @@ const descargarPdfEstudiantesFinanciados = () => {
     pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
 
     //insertar Texto
-    pdf.setFontSize(22);
-    pdf.text(30, 25, 'Reporte de Estudiantes con Financiamiento');
+    pdf.setFontSize(18);
+    pdf.text(30, 25, 'REPORTE DE ESTUDIANTES CON FINANCIAMIENTO');
 
     pdf.setFontSize(10);
 
@@ -283,8 +283,8 @@ const descargarPdfEstudiantesInscritos = () => {
     pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
 
     //insertar Texto
-    pdf.setFontSize(22);
-    pdf.text(30, 25, 'Reporte de estudiantes inscritos en los cursos');
+    pdf.setFontSize(17);
+    pdf.text(20, 25, 'REPORTE DE ESTUDIANTES INSCRITOS EN LOS CURSOS');
 
     pdf.setFontSize(10);
 
@@ -326,8 +326,8 @@ const descargarPdfCapacitacionesDemandadas = () => {
     pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
 
     //insertar Texto
-    pdf.setFontSize(22);
-    pdf.text(30, 25, 'Reporte de capacitaciones demandas');
+    pdf.setFontSize(18);
+    pdf.text(40, 25, 'REPORTE DE CAPACITACIONES DEMANDAS');
 
     pdf.setFontSize(10);
 
