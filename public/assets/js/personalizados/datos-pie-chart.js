@@ -327,7 +327,7 @@ const descargarPdfCapacitacionesDemandadas = () => {
 
     //insertar Texto
     pdf.setFontSize(18);
-    pdf.text(40, 25, 'REPORTE DE CAPACITACIONES DEMANDAS');
+    pdf.text(20, 25, 'REPORTE DE CAPACITACIONES CON MAYOR DEMANDA');
 
     pdf.setFontSize(10);
 
